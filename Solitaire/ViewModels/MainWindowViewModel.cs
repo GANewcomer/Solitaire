@@ -48,7 +48,8 @@ namespace Solitaire.ViewModels
             Player player = new Player();
             //player.StartGame();
 
-            TestStack = game1.MainStacks["Main6"];
+            TestStack = new CardStack(deck1, null);
+            TestStack = game2.MainStacks["Main6"];
         }
 
     }

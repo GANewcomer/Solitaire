@@ -1,5 +1,4 @@
-﻿using Solitaire.Cards;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -8,19 +7,17 @@ using System.Windows.Media;
 
 namespace Solitaire.Converters
 {
-    public class CardToColorConverter : IValueConverter
+    class FlipToBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null || value.GetType() != typeof(CardColor))
-                return Brushes.Black;
+            if (value.GetType() != typeof(bool))
+                return Brushes.Transparent;
 
-            if ((CardColor)value == CardColor.Black)
-                return Brushes.Black;
-            else if ((CardColor)value == CardColor.Red)
-                return Brushes.Red;
+            if ((bool)value)
+                return Brushes.Transparent;
             else
-                return Brushes.Black;
+                return Brushes.SlateGray;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

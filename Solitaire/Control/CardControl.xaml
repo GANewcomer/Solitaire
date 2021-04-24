@@ -4,31 +4,60 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Solitaire.Control"
-             xmlns:conv="clr-namespace:Solitaire.Converters"
+             xmlns:conv="clr-namespace:Solitaire.Converters" xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
              x:Name="this"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="150" d:DesignWidth="100">
     <UserControl.Resources>
         <conv:CardToColorConverter x:Key="ColorConverter"/>
+        <conv:FlipToBackgroundConverter x:Key="FlipBackgroundConverter"/>
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="50"/>
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
+    <Grid Width="100" Height="150">
+        <Border CornerRadius="5" BorderThickness="2" BorderBrush="Black">
+            <Grid Background="OldLace">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="25"/>
+                </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0" Text="{Binding ElementName=this, Path=Card.Color}"
-                   HorizontalAlignment="Center"/>
-        <TextBlock Background="{Binding ElementName=this, Path=Card, Converter={StaticResource ColorConverter}}"/>
-        <TextBlock Grid.Column="1" Text="{Binding ElementName=this, Path=Card.Suit}"
-                   HorizontalAlignment="Center"/>
-        <TextBlock Grid.Column="2" Text="{Binding ElementName=this, Path=Card.Rank}"
-                   HorizontalAlignment="Center"/>
-        <TextBlock Grid.Column="3" Text="{Binding ElementName=this, Path=Card.FullName}"
-                   HorizontalAlignment="Center"/>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="1" Source="{Binding ElementName=this, Path=SuitImagePath}"/>
+                    <TextBlock Grid.Column="0" Padding="10,0,5,0"
+                                Text="{Binding ElementName=this, Path=Card.RankName}" 
+                                Foreground="{Binding ElementName=this, Path=Card.Color, Converter={StaticResource ColorConverter}}"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </Grid>
 
+                <TextBlock Grid.Row="1" 
+                            Text="{Binding ElementName=this, Path=Card.FullName}" TextWrapping="Wrap"
+                            FontStyle="Italic" FontSize="10"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <Grid Grid.Row="2">
+                    <Grid.LayoutTransform>
+                        <RotateTransform Angle="180"/>
+                    </Grid.LayoutTransform>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="1" Source="{Binding ElementName=this, Path=SuitImagePath}"/>
+                    <TextBlock Grid.Column="0" Padding="10,0,5,0"
+                                Text="{Binding ElementName=this, Path=Card.RankName}" 
+                                Foreground="{Binding ElementName=this, Path=Card.Color, Converter={StaticResource ColorConverter}}"
+                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Grid Grid.Row="0" Grid.RowSpan="3" Background="{Binding ElementName=this, Path=Card.IsFaceUp, Converter={StaticResource FlipBackgroundConverter}}"/>
+
+
+            </Grid>
+        </Border>
     </Grid>
+    
 </UserControl>

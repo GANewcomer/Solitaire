@@ -51,6 +51,11 @@ namespace Solitaire.Cards
         }
 
         /// <summary>
+        /// The name of this card's rank
+        /// </summary>
+        public string RankName { get; }
+
+        /// <summary>
         /// The color of this card
         /// </summary>
         public CardColor Color { get; private set; }
@@ -81,12 +86,13 @@ namespace Solitaire.Cards
             Suit = suit;
             Rank = rank;
             IsFaceUp = faceUp;
+            RankName = rank.GetRankName();
 
             //Short name
             ShortName = Suit.ToString().Substring(0, 1) + Rank.ToString();
 
             //Full name
-            FullName = rank.GetRankName() + " of " + Suit.ToString() + "s";
+            FullName = RankName + " of " + Suit.ToString() + "s";
 
         }
 
