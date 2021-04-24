@@ -19,6 +19,17 @@ namespace Solitaire.ViewModels
             }
         }
 
+        private Tableau tableau;
+
+        public Tableau Tableau
+        { 
+            get => this.tableau;
+            set
+            {
+                SetProperty(ref this.tableau, value);
+            }
+        }
+
 
         public MainWindowViewModel()
         {
@@ -50,6 +61,8 @@ namespace Solitaire.ViewModels
 
             TestStack = new CardStack(deck1, null);
             TestStack = game2.MainStacks["Main6"];
+
+            Tableau = game1;    
         }
 
     }

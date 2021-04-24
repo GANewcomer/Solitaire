@@ -8,15 +8,23 @@
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="650" Width="1050">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <controls:CardStackControl Grid.Column="0"
-                                   CardStack="{Binding TestStack}"/>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Game" VerticalAlignment="Stretch">
+                <MenuItem Header="New Game">
+                    
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        
+        <controls:TableauControl Grid.Row="1" 
+                                 Tableau="{Binding Tableau}"/>
 
     </Grid>
 </Window>

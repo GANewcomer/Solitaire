@@ -8,12 +8,47 @@
              mc:Ignorable="d" 
              x:Name="this"
              d:DesignHeight="450" d:DesignWidth="800">
-    <ListBox ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}">
-        <ListBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type cards:Card}">
-                <!--<TextBlock Text="{Binding }"/>-->
-                <local:CardControl Card="{Binding}"/>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderThickness="1,0,1,1" BorderBrush="Black">
+            <TextBlock Text="{Binding ElementName=this, Path=CardStack.Name}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontWeight="Bold"/>
+        </Border>
+        
+        <ListBox Grid.Row="1" ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}" 
+                 BorderThickness="0" HorizontalContentAlignment="Center">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type cards:Card}">
+                    <local:CardControl Card="{Binding}" Height="30"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+    
+    <!--<ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:CardControl Card="{Binding}" Height="auto"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>-->
+
+
 </UserControl>
