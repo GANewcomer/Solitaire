@@ -19,7 +19,7 @@ namespace Solitaire.Game
         {
             //Shuffling deck
             Deck deck = new Deck();
-            deck.ShuffleDeck();
+            //deck.ShuffleDeck();
 
             //Creating tableau
             Tableau tableau = new Tableau(deck);
@@ -29,9 +29,12 @@ namespace Solitaire.Game
 
         }
 
+        public int CycleCounter = 0;
 
         public void EvaluateGameState(Tableau tableau)
         {
+            CycleCounter++;
+
             //Check moves
             List<Move> moves = CheckAvailableMoves(tableau);
 

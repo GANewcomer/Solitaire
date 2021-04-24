@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Solitaire.Control.CardStackControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Solitaire.Control"
+             mc:Ignorable="d" 
+             x:Name="this"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ListBox ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <!--<TextBlock Text="{Binding }"/>-->
+                <local:CardControl Card="{Binding}"/>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>

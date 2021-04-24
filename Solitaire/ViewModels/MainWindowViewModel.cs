@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using Prism.Mvvm;
 using Solitaire.Cards;
 using Solitaire.Game;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Solitaire
+namespace Solitaire.ViewModels
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public class MainWindowViewModel : BindableBase
     {
-        public MainWindow()
+        private CardStack testStack;
+
+        public CardStack TestStack { 
+            get => this.testStack;
+            set
+            {
+                SetProperty(ref this.testStack, value);
+            }
+        }
+
+
+        public MainWindowViewModel()
         {
-            InitializeComponent();
 
             // creating some decks
             Deck deck1 = new Deck();
@@ -49,8 +46,10 @@ namespace Solitaire
 
             // player
             Player player = new Player();
-            player.StartGame();
+            //player.StartGame();
 
+            TestStack = game1.MainStacks["Main6"];
         }
+
     }
 }
