@@ -23,12 +23,9 @@
         <ListBox Grid.Row="1" ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}" 
                  BorderThickness="0" HorizontalContentAlignment="Center"
                  SelectedItem="{Binding ElementName=this, Path=SelectedCard}">
-            <ListBox.LayoutTransform>
-                <TranslateTransform Y="0"/>
-            </ListBox.LayoutTransform>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type cards:Card}">
-                    <local:CardControl Card="{Binding}" Margin="0,0,0,-115"/>
+                    <local:CardControl Card="{Binding}" Margin="0,0,0,-130"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

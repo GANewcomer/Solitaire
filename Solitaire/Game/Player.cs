@@ -1,12 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
+using Prism.Mvvm;
 using Solitaire.Cards;
 
 namespace Solitaire.Game
 {
-    public class Player
+    public class Player : BindableBase
     {
+
+        private ObservableCollection<Move> moves;
+
+        public ObservableCollection<Move> Moves
+        {
+            get => this.moves;
+            set
+            {
+                SetProperty(ref this.moves, value);
+            }
+        }
 
 
         public Player()

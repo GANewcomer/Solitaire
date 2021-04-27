@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
+using Prism.Mvvm;
 using Solitaire.Cards;
 
 namespace Solitaire.Game
 {
-    public class Tableau
+    public class Tableau : BindableBase
     {
+        private ObservableCollection<Move> moves = new ObservableCollection<Move>();
+
         public int HandIncrement = 3;
 
         public Deck InitialDeck { get; }
@@ -19,7 +23,13 @@ namespace Solitaire.Game
 
         public CardStack HandFlip { get; private set; }
 
-        public List<Move> Moves { get; private set; } = new List<Move>();
+        public ObservableCollection<Move> Moves { get => this.moves;
+            private set
+            {
+                SetProperty(ref this.moves, value);    
+            }
+        }
+
         public List<string> History { get; private set; } = new List<string>();
 
         public bool WasWon { get; }
@@ -117,7 +127,7 @@ namespace Solitaire.Game
             // hands
             newTableau.Hand = Hand.Copy();
             newTableau.HandFlip = HandFlip.Copy();
-            newTableau.Moves = new List<Move>(Moves);
+            newTableau.Moves = new ObservableCollection<Move>(Moves);
 
 
             return newTableau;

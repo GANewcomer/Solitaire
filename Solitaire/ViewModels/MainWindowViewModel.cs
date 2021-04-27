@@ -1,25 +1,34 @@
-﻿using Prism.Mvvm;
+﻿using Prism.Commands;
+using Prism.Mvvm;
 using Solitaire.Cards;
 using Solitaire.Game;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 
 namespace Solitaire.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private CardStack testStack;
 
-        public CardStack TestStack { 
-            get => this.testStack;
+        #region Properties
+
+        private Deck mainDeck;
+        private Move selectedMove;
+        private Tableau tableau;
+        private Player player;
+
+        public Deck MainDeck
+        {
+            get => this.mainDeck;
             set
             {
-                SetProperty(ref this.testStack, value);
+                SetProperty(ref this.mainDeck, value);
             }
         }
 
-        private Tableau tableau;
 
         public Tableau Tableau
         { 
@@ -30,40 +39,64 @@ namespace Solitaire.ViewModels
             }
         }
 
+        public Player Player
+        { 
+            get => this.player;
+            set
+            {
+                SetProperty(ref this.player, value);
+            }
+        }
+
+
+        public Move SelectedMove
+        { 
+            get => this.selectedMove;
+            set
+            {
+                SetProperty(ref this.selectedMove, value);
+            }
+        }
+
+        #endregion Properties
+
+        #region Commands
+
+        public DelegateCommand PerformMoveCommand { get; set; }
+
+        #endregion Commands
 
         public MainWindowViewModel()
         {
+            //Main objects
+            MainDeck = new Deck();
+            Tableau = new Tableau(MainDeck);
 
-            // creating some decks
-            Deck deck1 = new Deck();
-            Deck deck2 = new Deck();
-            Deck deck3 = new Deck();
-            deck2.ShuffleDeck();
+            Player = new Player();
+            Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
 
-            bool equal1 = deck2.Equals(deck1);
-            bool equal2 = deck3.Equals(deck1);
+            //Commands
+            PerformMoveCommand = new DelegateCommand(PerformMove);
 
-            // creating a tableau
-            Tableau game1 = new Tableau(deck1);
-            Tableau game2 = new Tableau(deck2);
-            Tableau game3 = new Tableau(deck3);
-
-            string game1Summary = game1.GetSummary();
-            string game2Summary = game2.GetSummary();
-            string game3Summary = game3.GetSummary();
-
-            bool gameEqual1 = game1.Equals(game2);
-            bool gameEqual2 = game1.Equals(game3);
-
-            // player
-            Player player = new Player();
-            //player.StartGame();
-
-            TestStack = new CardStack(deck1, null);
-            TestStack = game2.MainStacks["Main6"];
-
-            Tableau = game1;    
         }
+
+
+        #region Methods
+
+        public void PerformMove()
+        {
+            if (SelectedMove.NumCards == 0)
+            {
+                MessageBox.Show("No move selected");
+                return;
+            }
+
+            bool successful = Player.PerformMove(Tableau, SelectedMove);
+            Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
+
+        }
+
+        #endregion Methods
 
     }
 }

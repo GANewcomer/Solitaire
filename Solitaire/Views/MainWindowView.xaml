@@ -8,13 +8,14 @@
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="1050">
+        Title="MainWindow" Height="850" Width="1350">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        
         <Menu Grid.Row="0">
             <MenuItem Header="Game" VerticalAlignment="Stretch">
                 <MenuItem Header="New Game">
@@ -22,9 +23,45 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        
-        <controls:TableauControl Grid.Row="1" 
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!--Control-->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Control"
+                           HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                <GroupBox Grid.Row="1" Header="Moves">
+                    <ListBox ItemsSource="{Binding Player.Moves}"
+                             SelectedItem="{Binding SelectedMove}">
+                        
+                    </ListBox>
+                </GroupBox>
+
+                <Button Grid.Row="2" Content="Perform Move" Command="{Binding PerformMoveCommand}"/>
+
+                <GroupBox Grid.Row="3" Header="Move History">
+                    <ListBox ItemsSource="{Binding Tableau.Moves}"/>
+                </GroupBox>
+            </Grid>
+            
+            
+            <!--Tableau-->
+            <controls:TableauControl Grid.Column="1" 
                                  Tableau="{Binding Tableau}"/>
 
+        </Grid>
+        
     </Grid>
 </Window>

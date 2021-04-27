@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Solitaire.Cards
 {
-    public class Card
+    public class Card : BindableBase
     {
 
         public const int MinRank = 1;
@@ -12,6 +13,7 @@ namespace Solitaire.Cards
 
         private CardSuit suit;
         private int rank;
+        private bool isFaceUp;
 
         /// <summary>
         /// This card's suit
@@ -63,7 +65,13 @@ namespace Solitaire.Cards
         /// <summary>
         /// Whether this card is exposed
         /// </summary>
-        public bool IsFaceUp { get; private set; }
+        public bool IsFaceUp { get => this.isFaceUp;
+            private set
+            {
+                SetProperty(ref this.isFaceUp, value);
+            }
+
+        }
 
         /// <summary>
         /// The short name of this card ("Suit"-"Rank")

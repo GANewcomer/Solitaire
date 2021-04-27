@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using Solitaire.Cards;
 using System.Linq;
+using Prism.Mvvm;
+using System.Collections.ObjectModel;
 
 namespace Solitaire.Game
 {
-    public class CardStack
+    public class CardStack : BindableBase
     {
         #region Properties
+
+        private ObservableCollection<Card> stack = new ObservableCollection<Card>();
 
         public string Name { get; }
 
@@ -20,7 +24,14 @@ namespace Solitaire.Game
         /// <summary>
         /// The list of cards that comprise this card stack
         /// </summary>
-        public List<Card> Stack { get; private set; } = new List<Card>();
+        public ObservableCollection<Card> Stack 
+        { 
+            get => this.stack;
+            private set
+            {
+                SetProperty(ref this.stack, value);
+            }
+        }
 
         /// <summary>
         /// The number of cards in this stack
@@ -299,7 +310,7 @@ namespace Solitaire.Game
         public CardStack(Deck deck, IStackAddRule addingRule, string name = "")
         {
             AddRule = addingRule;
-            Stack = deck.Cards.ToList();
+            Stack = new ObservableCollection<Card>(deck.Cards.ToList());
             Name = name;
         }
 
@@ -341,7 +352,7 @@ namespace Solitaire.Game
         /// <returns></returns>
         public CardStack Copy()
         {
-            List<Card> newStack = new List<Card>();
+            ObservableCollection<Card> newStack = new ObservableCollection<Card>();
             foreach (Card card in Stack)
             {
                 newStack.Add(card.Copy());

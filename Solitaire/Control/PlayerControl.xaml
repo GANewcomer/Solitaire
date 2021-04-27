@@ -10,16 +10,22 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="Player" FontSize="20"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <GroupBox Grid.Row="1">
+        <GroupBox Grid.Row="1" Header="Moves">
             <ListBox Grid.Row="1">
 
             </ListBox>
         </GroupBox>
+
+        <Button Grid.Row="2" Content="Perform Move">
+            
+        </Button>
+        
     </Grid>
 </UserControl>

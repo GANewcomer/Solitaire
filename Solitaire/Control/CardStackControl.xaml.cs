@@ -25,6 +25,19 @@ namespace Solitaire.Control
             InitializeComponent();
         }
 
+
+
+        public bool ShowStack
+        {
+            get { return (bool)GetValue(ShowStackProperty); }
+            set { SetValue(ShowStackProperty, value); }
+        }
+
+
+        public static readonly DependencyProperty ShowStackProperty =
+            DependencyProperty.Register("ShowStack", typeof(bool), typeof(CardStackControl));
+
+
         public CardStack CardStack
         {
             get { return (CardStack)GetValue(CardStackProperty); }
