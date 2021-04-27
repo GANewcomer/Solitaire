@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Solitaire.Control.CardStackControl"
+﻿<UserControl x:Class="Solitaire.Control.CardStackSingleControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -23,6 +23,11 @@
         <ListBox Grid.Row="1" ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}" 
                  BorderThickness="0" HorizontalContentAlignment="Center"
                  SelectedItem="{Binding ElementName=this, Path=SelectedCard}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid VerticalAlignment="Top"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type cards:Card}">
                     <local:CardControl Card="{Binding}" Margin="0,0,0,-130"/>

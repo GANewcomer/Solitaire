@@ -30,19 +30,19 @@
         </Grid.RowDefinitions>
         
         <!--Ace Stack-->
-        <local:CardStackControl Grid.Column="0" Grid.Row="0"
+        <local:CardStackSingleControl Grid.Column="0" Grid.Row="0"
             CardStack="{Binding ElementName=this, Path=Tableau.AceStacks, 
                                             Converter={StaticResource getDictItem},
                                             ConverterParameter=AceDiamond}"/>
-        <local:CardStackControl Grid.Column="0" Grid.Row="1"
+        <local:CardStackSingleControl Grid.Column="0" Grid.Row="1"
             CardStack="{Binding ElementName=this, Path=Tableau.AceStacks, 
                                             Converter={StaticResource getDictItem},
                                             ConverterParameter=AceSpade}"/>
-        <local:CardStackControl Grid.Column="0" Grid.Row="2"
+        <local:CardStackSingleControl Grid.Column="0" Grid.Row="2"
             CardStack="{Binding ElementName=this, Path=Tableau.AceStacks, 
                                             Converter={StaticResource getDictItem},
                                             ConverterParameter=AceHeart}"/>
-        <local:CardStackControl Grid.Column="0" Grid.Row="3"
+        <local:CardStackSingleControl Grid.Column="0" Grid.Row="3"
             CardStack="{Binding ElementName=this, Path=Tableau.AceStacks, 
                                             Converter={StaticResource getDictItem},
                                             ConverterParameter=AceClub}"/>
@@ -78,9 +78,9 @@
                                             ConverterParameter=Main7}"/>
 
         <!--Hand-->
-        <local:CardStackControl Grid.Column="6" Grid.Row="3"
+        <local:CardStackSingleControl Grid.Column="6" Grid.Row="3"
                 CardStack="{Binding ElementName=this, Path=Tableau.Hand}"/>
-        <local:CardStackControl Grid.Column="7" Grid.Row="3"
+        <local:CardStackSingleControl Grid.Column="7" Grid.Row="3"
                 CardStack="{Binding ElementName=this, Path=Tableau.HandFlip}"/>
 
     </Grid>
