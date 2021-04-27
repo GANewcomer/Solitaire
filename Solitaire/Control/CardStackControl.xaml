@@ -21,12 +21,8 @@
         </Border>
         
         <ListBox Grid.Row="1" ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}" 
-                 BorderThickness="0" HorizontalContentAlignment="Center">
-            <!--<ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="1"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>-->
+                 BorderThickness="0" HorizontalContentAlignment="Center"
+                 SelectedItem="{Binding ElementName=this, Path=SelectedCard}">
             <ListBox.LayoutTransform>
                 <TranslateTransform Y="0"/>
             </ListBox.LayoutTransform>
@@ -37,26 +33,4 @@
             </ListBox.ItemTemplate>
         </ListBox>
     </Grid>
-    
-    <!--<ScrollViewer VerticalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <local:CardControl Card="{Binding}" Height="auto"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>-->
-
-
 </UserControl>
