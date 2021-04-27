@@ -62,6 +62,8 @@ namespace Solitaire.ViewModels
 
         #region Commands
 
+        public DelegateCommand NewGameCommand { get; set; }
+
         public DelegateCommand PerformMoveCommand { get; set; }
 
         #endregion Commands
@@ -70,18 +72,26 @@ namespace Solitaire.ViewModels
         {
             //Main objects
             MainDeck = new Deck();
-            Tableau = new Tableau(MainDeck);
-
             Player = new Player();
-            Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
+
+
+            Tableau = new Tableau(MainDeck);
+            Player.Moves = Player.CheckAvailableMoves(Tableau);
 
             //Commands
             PerformMoveCommand = new DelegateCommand(PerformMove);
-
+            NewGameCommand = new DelegateCommand(NewGame);
         }
 
 
         #region Methods
+
+        public void NewGame()
+        {
+            MainDeck.ShuffleDeck();
+            Tableau = new Tableau(MainDeck);
+            Player.Moves = Player.CheckAvailableMoves(Tableau);
+        }
 
         public void PerformMove()
         {

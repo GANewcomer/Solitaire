@@ -49,7 +49,7 @@ namespace Solitaire.Game
             CycleCounter++;
 
             //Check moves
-            List<Move> moves = CheckAvailableMoves(tableau);
+            ObservableCollection<Move> moves = CheckAvailableMoves(tableau);
 
             //Looping through moves
             foreach (Move move in moves)
@@ -135,9 +135,9 @@ namespace Solitaire.Game
 
         }
 
-        public List<Move> CheckAvailableMoves(Tableau tableau)
+        public ObservableCollection<Move> CheckAvailableMoves(Tableau tableau)
         {
-            List<Move> possibleMoves = new List<Move>();
+            ObservableCollection<Move> possibleMoves = new ObservableCollection<Move>();
 
             // main stacks
             foreach (CardStack stack in tableau.MainStacks.Values)

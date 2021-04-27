@@ -55,7 +55,10 @@ namespace Solitaire.Cards
                     continue;
 
                 // adding the card of the random index into the new list
-                newDeck.Add(Cards[index]);
+                Card card = Cards[index];
+                if (card.IsFaceUp)
+                    card.Flip();
+                newDeck.Add(card);
                 indicesChosen.Add(index);
             }
 

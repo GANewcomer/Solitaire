@@ -18,7 +18,7 @@
         
         <Menu Grid.Row="0">
             <MenuItem Header="Game" VerticalAlignment="Stretch">
-                <MenuItem Header="New Game">
+                <MenuItem Header="New Game" Command="{Binding NewGameCommand}">
                     
                 </MenuItem>
             </MenuItem>
