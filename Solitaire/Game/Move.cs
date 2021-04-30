@@ -15,11 +15,14 @@ namespace Solitaire.Game
 
         public bool ReverseCardOrder { get; }
 
-        public Move(int numCards, CardStack stackFrom, CardStack stackTo, bool reverseCardOrder = false)
+        public double Ranking { get; }
+
+        public Move(int numCards, CardStack stackFrom, CardStack stackTo, double ranking, bool reverseCardOrder = false)
         {
             StackFromName = stackFrom.Name;
             StackToName = stackTo.Name;
             NumCards = numCards;
+            Ranking = ranking;
             ReverseCardOrder = reverseCardOrder;
         }
 

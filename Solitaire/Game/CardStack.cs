@@ -33,10 +33,19 @@ namespace Solitaire.Game
             }
         }
 
+        private int cardCount;
+
         /// <summary>
         /// The number of cards in this stack
         /// </summary>
-        public int CardCount { get => Stack.Count; }
+        public int CardCount { 
+            get => this.cardCount;
+            private set
+            {
+                SetProperty(ref this.cardCount, value);
+            }
+
+        }
 
         /// <summary>
         /// The top card of this stack
@@ -77,6 +86,7 @@ namespace Solitaire.Game
                 return false;
 
             Stack.Add(card);
+            CardCount = Stack.Count;
             return true;
         }
 
@@ -122,6 +132,7 @@ namespace Solitaire.Game
 
             Card removedCard = Stack[reversePosition];
             Stack.RemoveAt(reversePosition);
+            CardCount = Stack.Count;
             return removedCard;
         }
 
@@ -273,6 +284,7 @@ namespace Solitaire.Game
 
             // setting
             Stack = reversed.Stack;
+            CardCount = Stack.Count;
         }
 
         #endregion Methods
@@ -287,6 +299,8 @@ namespace Solitaire.Game
         {
             AddRule = addingRule;
             Name = name;
+            CardCount = Stack.Count;
+
         }
 
 
@@ -300,6 +314,7 @@ namespace Solitaire.Game
             AddRule = addingRule;
             Stack = stack.Stack;
             Name = name;
+            CardCount = Stack.Count;
         }
 
         /// <summary>
@@ -312,6 +327,7 @@ namespace Solitaire.Game
             AddRule = addingRule;
             Stack = new ObservableCollection<Card>(deck.Cards.ToList());
             Name = name;
+            CardCount = Stack.Count;
         }
 
         #endregion Constructors

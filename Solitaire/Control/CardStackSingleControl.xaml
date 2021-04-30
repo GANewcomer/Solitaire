@@ -14,10 +14,33 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!--Header-->
         <Border BorderThickness="1,0,1,1" BorderBrush="Black">
-            <TextBlock Text="{Binding ElementName=this, Path=CardStack.Name}"
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="{Binding ElementName=this, Path=CardStack.Name}"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    FontWeight="Bold"/>
+
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="("
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{Binding ElementName=this, Path=CardStack.CardCount}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text=") "
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                </Grid>
+
+            </Grid>
         </Border>
 
         <ListBox Grid.Row="1" ItemsSource="{Binding ElementName=this, Path=CardStack.Stack}" 

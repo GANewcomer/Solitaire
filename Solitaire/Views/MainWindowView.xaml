@@ -45,7 +45,11 @@
                 <GroupBox Grid.Row="1" Header="Moves">
                     <ListBox ItemsSource="{Binding Player.Moves}"
                              SelectedItem="{Binding SelectedMove}">
-                        
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <controls:MoveControl Move="{Binding}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
                     </ListBox>
                 </GroupBox>
 

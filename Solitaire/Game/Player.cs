@@ -155,15 +155,17 @@ namespace Solitaire.Game
                         if (otherStack.Name == stack.Name)
                             continue;
 
+                        int ranking = 1;
                         if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                            possibleMoves.Add(new Move(position, stack, otherStack));
+                            possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                     }
 
                     //checking ace stacks
                     foreach (CardStack otherStack in tableau.AceStacks.Values)
                     {
+                        int ranking = 1;
                         if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                            possibleMoves.Add(new Move(position, stack, otherStack));
+                            possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                     }
                 }
             }
@@ -180,8 +182,9 @@ namespace Solitaire.Game
                 //checking main stacks
                 foreach (CardStack otherStack in tableau.MainStacks.Values)
                 {
+                    int ranking = 1;
                     if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                        possibleMoves.Add(new Move(position, stack, otherStack));
+                        possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                 }
 
                 //checking other ace stacks
@@ -190,8 +193,9 @@ namespace Solitaire.Game
                     if (otherStack.Name == stack.Name)
                         continue;
 
+                    int ranking = 1;
                     if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                        possibleMoves.Add(new Move(position, stack, otherStack));
+                        possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                 }
             }
 
@@ -206,8 +210,9 @@ namespace Solitaire.Game
                 //checking main stacks
                 foreach (CardStack otherStack in tableau.MainStacks.Values)
                 {
+                    int ranking = 1;
                     if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                        possibleMoves.Add(new Move(position, stack, otherStack));
+                        possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                 }
 
                 //checking other ace stacks
@@ -216,16 +221,18 @@ namespace Solitaire.Game
                     if (otherStack.Name == stack.Name)
                         continue;
 
+                    int ranking = 1;
                     if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                        possibleMoves.Add(new Move(position, stack, otherStack));
+                        possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                 }
             }
 
             // hand flipping
+            int handRanking = 1;
             if (tableau.Hand.CardCount != 0)
-                possibleMoves.Add(new Move(tableau.HandIncrement, tableau.Hand, tableau.HandFlip, true));           // regular hand increment
+                possibleMoves.Add(new Move(tableau.HandIncrement, tableau.Hand, tableau.HandFlip, 2, true));           // regular hand increment
             else
-                possibleMoves.Add(new Move(tableau.HandFlip.CardCount, tableau.HandFlip, tableau.Hand, true));      // resetting hand
+                possibleMoves.Add(new Move(tableau.HandFlip.CardCount, tableau.HandFlip, tableau.Hand, 2, true));      // resetting hand
 
 
             return possibleMoves;
