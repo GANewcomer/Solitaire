@@ -76,7 +76,7 @@ namespace Solitaire.ViewModels
 
 
             Tableau = new Tableau(MainDeck);
-            Player.Moves = Player.CheckAvailableMoves(Tableau);
+            Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
 
             //Commands
             PerformMoveCommand = new DelegateCommand(PerformMove);
@@ -90,7 +90,7 @@ namespace Solitaire.ViewModels
         {
             MainDeck.ShuffleDeck();
             Tableau = new Tableau(MainDeck);
-            Player.Moves = Player.CheckAvailableMoves(Tableau);
+            Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
         }
 
         public void PerformMove()

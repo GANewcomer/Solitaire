@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using Prism.Mvvm;
 using Solitaire.Cards;
@@ -49,7 +50,7 @@ namespace Solitaire.Game
             CycleCounter++;
 
             //Check moves
-            ObservableCollection<Move> moves = CheckAvailableMoves(tableau);
+            ObservableCollection<Move> moves = new ObservableCollection<Move>(CheckAvailableMoves(tableau));
 
             //Looping through moves
             foreach (Move move in moves)
@@ -148,9 +149,12 @@ namespace Solitaire.Game
 
         }
 
-        public ObservableCollection<Move> CheckAvailableMoves(Tableau tableau)
+        public List<Move> CheckAvailableMoves(Tableau tableau)
         {
-            ObservableCollection<Move> possibleMoves = new ObservableCollection<Move>();
+            List<Move> possibleMoves = new List<Move>();
+
+            // check if all the kings have been planted yet
+            bool allKingsPlanted = tableau.MainStacks.Values.ToArray().Where(stack => stack.BaseCard.Rank == Card.MaxRank).Count() == 4;
 
             // main stacks
             foreach (CardStack stack in tableau.MainStacks.Values)
@@ -170,7 +174,16 @@ namespace Solitaire.Game
 
                         int ranking = 1;
                         if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
+                        {
+                            if (card == stack.BaseCard && card.Rank == Card.MaxRank && otherStack.CardCount == 0)   //moving king into another empty spot (useless)
+                                continue;
+                            if (card == stack.BaseCard && allKingsPlanted)
+                                ranking = 4;
+                            if (position != stack.Stack.Where(c => c.IsFaceUp).Count())
+                                ranking = 3;
+
                             possibleMoves.Add(new Move(position, stack, otherStack, ranking));
+                        }
                     }
 
                     //checking ace stacks
@@ -198,21 +211,11 @@ namespace Solitaire.Game
                 //checking main stacks
                 foreach (CardStack otherStack in tableau.MainStacks.Values)
                 {
-                    int ranking = 1;
+                    int ranking = 3;
                     if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
                         possibleMoves.Add(new Move(position, stack, otherStack, ranking));
                 }
 
-                //checking other ace stacks
-                foreach (CardStack otherStack in tableau.AceStacks.Values)
-                {
-                    if (otherStack.Name == stack.Name)
-                        continue;
-
-                    int ranking = 1;
-                    if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                        possibleMoves.Add(new Move(position, stack, otherStack, ranking));
-                }
             }
 
             // hand flip
@@ -250,6 +253,7 @@ namespace Solitaire.Game
             else
                 possibleMoves.Add(new Move(tableau.HandFlip.CardCount, tableau.HandFlip, tableau.Hand, 2, true));      // resetting hand
 
+            possibleMoves.Sort();
 
             return possibleMoves;
         }

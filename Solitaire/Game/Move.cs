@@ -5,7 +5,7 @@ using Solitaire.Cards;
 
 namespace Solitaire.Game
 {
-    public struct Move
+    public struct Move : IComparable
     {
         public string StackFromName { get; }
 
@@ -31,5 +31,12 @@ namespace Solitaire.Game
             return string.Format("{0}:{1}", StackFromName, StackToName);
         }
 
+        public int CompareTo(object obj)
+        {
+            if (obj is Move)
+                return Ranking.CompareTo(((Move)obj).Ranking);
+            else
+                return 0;
+        }
     }
 }
