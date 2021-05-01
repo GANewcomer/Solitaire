@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Solitaire.Game;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Solitaire.Cards
@@ -43,23 +45,20 @@ namespace Solitaire.Cards
         /// </summary>
         public void ShuffleDeck()
         {
-
             Random rn = new Random();
-            List<int> indicesChosen = new List<int>();
+            List<Card> oldDeck = Cards.ToList();
             List<Card> newDeck = new List<Card>();
             while (newDeck.Count != 52)
             {
-                // generating random index from 0 to 51
-                int index = rn.Next(0, 52);
-                if (indicesChosen.Contains(index))      // checking if this index has been generated yet
-                    continue;
+                // generating random index from the remaining cards in the old deck
+                int index = rn.Next(0, oldDeck.Count-1);
 
                 // adding the card of the random index into the new list
-                Card card = Cards[index];
+                Card card = oldDeck[index];
                 if (card.IsFaceUp)
                     card.Flip();
+                oldDeck.Remove(card);
                 newDeck.Add(card);
-                indicesChosen.Add(index);
             }
 
             //Setting new deck

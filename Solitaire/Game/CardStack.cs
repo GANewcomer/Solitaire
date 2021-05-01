@@ -150,7 +150,7 @@ namespace Solitaire.Game
                 throw new ArgumentException("Length must be >= 1");
 
             // transferring cards
-            CardStack topmost = new CardStack(AddRule);
+            CardStack topmost = new CardStack(new RuleNone());
             for (int i = 0; i < length; i++)
             {
                 TransferTopCard(topmost);
@@ -159,7 +159,7 @@ namespace Solitaire.Game
             // reversing stack (to match original order)
             topmost.ReverseStack();
 
-            return topmost;
+            return new CardStack(topmost, AddRule);
         }
 
 
@@ -176,13 +176,13 @@ namespace Solitaire.Game
                 throw new ArgumentException("Length must be >= 1");
 
             // transferring cards
-            CardStack topmost = new CardStack(AddRule);
+            CardStack topmost = new CardStack(new RuleNone());
             for (int i = 0; i < length; i++)
             {
                 TransferTopCard(topmost);
             }
 
-            return topmost;
+            return new CardStack(topmost, AddRule);
         }
 
         /// <summary>

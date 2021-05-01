@@ -103,12 +103,17 @@ namespace Solitaire.Game
             // moving
             if (stackFrom != null && stackTo != null)
             {
+                // performing move
                 bool successful = false;
                 if (move.NumCards == 1)
                     successful = stackFrom.TransferTopCard(stackTo);
                 else
                 {
-                    CardStack movedCards = stackFrom.TakeTopMost(move.NumCards);
+                    CardStack movedCards;
+                    if (move.ReverseCardOrder)
+                        movedCards = stackFrom.DealTopMost(move.NumCards);
+                    else
+                        movedCards = stackFrom.TakeTopMost(move.NumCards);
                     successful = stackTo.AddStack(movedCards);
                 }
 
@@ -123,8 +128,16 @@ namespace Solitaire.Game
                     if (stack.TopCard != null && !stack.TopCard.IsFaceUp)
                         stack.TopCard.Flip();
                 }
-                if (tableau.HandFlip.TopCard != null && !tableau.HandFlip.TopCard.IsFaceUp)
-                    tableau.HandFlip.TopCard.Flip();
+                foreach (Card card in tableau.Hand.Stack)
+                {
+                    if (card != null && card.IsFaceUp)
+                        card.Flip();
+                }
+                foreach (Card card in tableau.HandFlip.Stack)
+                {
+                    if (card != null && !card.IsFaceUp)
+                        card.Flip();
+                }
 
                 tableau.Moves.Add(move);
                 return successful;
@@ -161,11 +174,14 @@ namespace Solitaire.Game
                     }
 
                     //checking ace stacks
-                    foreach (CardStack otherStack in tableau.AceStacks.Values)
+                    if (card == stack.TopCard)
                     {
-                        int ranking = 1;
-                        if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
-                            possibleMoves.Add(new Move(position, stack, otherStack, ranking));
+                        foreach (CardStack otherStack in tableau.AceStacks.Values)
+                        {
+                            int ranking = 1;
+                            if (otherStack.AddRule.IsCardAllowedToBeAdded(card, otherStack.TopCard))
+                                possibleMoves.Add(new Move(position, stack, otherStack, ranking));
+                        }
                     }
                 }
             }
