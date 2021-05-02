@@ -154,7 +154,7 @@ namespace Solitaire.Game
             List<Move> possibleMoves = new List<Move>();
 
             // check if all the kings have been planted yet
-            bool allKingsPlanted = tableau.MainStacks.Values.ToArray().Where(stack => stack.BaseCard.Rank == Card.MaxRank).Count() == 4;
+            bool allKingsPlanted = tableau.MainStacks.Values.ToArray().Where(stack => stack.BaseCard?.Rank == Card.MaxRank).Count() == 4;
 
             // main stacks
             foreach (CardStack stack in tableau.MainStacks.Values)
