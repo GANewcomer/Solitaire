@@ -59,8 +59,7 @@ namespace Solitaire.Game
                 Tableau copyTableau = tableau.Copy();
 
                 // performing move
-                if (!PerformMove(copyTableau, move))
-                    throw new InvalidOperationException("Move could not be performed even though it was detected");
+                PerformMove(copyTableau, move);
 
                 // checking tableau state
                 string state = copyTableau.GetSummary();
@@ -77,7 +76,7 @@ namespace Solitaire.Game
         }
 
 
-        public bool PerformMove(Tableau tableau, Move move)
+        public BoardStatus PerformMove(Tableau tableau, Move move)
         {
             // from stack
             CardStack stackFrom = null;
@@ -118,6 +117,9 @@ namespace Solitaire.Game
                     successful = stackTo.AddStack(movedCards);
                 }
 
+                if (!successful)
+                    throw new InvalidOperationException("Move could not be performed");
+
                 // flipping all available cards
                 foreach (CardStack stack in tableau.MainStacks.Values)
                 {
@@ -141,7 +143,8 @@ namespace Solitaire.Game
                 }
 
                 tableau.Moves.Add(move);
-                return successful;
+                BoardStatus status = tableau.UpdateBoard();
+                return status;
             }
             else
                 throw new InvalidOperationException("Move could not be completed");

@@ -27,8 +27,16 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         
+        <!--Status-->
+        <TextBlock Grid.Column="6" Grid.Row="4" Text="# Cards uncovered:"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Red"/>
+        <TextBlock Grid.Column="7" Grid.Row="4" Text="{Binding ElementName=this, Path=Tableau.FaceDownCards}"
+                   HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="Red"
+                   Padding="5,0,0,0"/>
+
         <!--Ace Stack-->
         <local:CardStackSingleControl Grid.Column="0" Grid.Row="0"
             CardStack="{Binding ElementName=this, Path=Tableau.AceStacks, 

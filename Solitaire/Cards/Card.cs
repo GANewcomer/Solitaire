@@ -10,6 +10,7 @@ namespace Solitaire.Cards
 
         public const int MinRank = 1;
         public const int MaxRank = 13;
+        public const int NumSuits = 4;
 
         private CardSuit suit;
         private int rank;
@@ -104,6 +105,46 @@ namespace Solitaire.Cards
 
         }
 
+        /// <summary>
+        /// Create a new card from a short name
+        /// </summary>
+        /// <param name="shortName"></param>
+        /// <param name="isFaceUp"></param>
+        public Card(string shortName, bool isFaceUp = false)
+        {
+            string suitLetter = shortName.Substring(0, 1);
+            string rankNumber = shortName.Substring(1);
+
+            switch (suitLetter)
+            {
+                case "S":
+                    Suit = CardSuit.Spade;
+                    break;
+                case "C":
+                    Suit = CardSuit.Club;
+                    break;
+                case "H":
+                    Suit = CardSuit.Heart;
+                    break;
+                case "D":
+                    Suit = CardSuit.Diamond;
+                    break;
+                default:
+                    throw new ArgumentException("Suit letter does not match any suit (must be S, C, H, or D)");
+            }
+
+            Rank = Convert.ToInt32(rankNumber);
+            IsFaceUp = isFaceUp;
+            RankName = Rank.GetRankName();
+
+            //Short name
+            ShortName = Suit.ToString().Substring(0, 1) + Rank.ToString();
+
+            //Full name
+            FullName = RankName + " of " + Suit.ToString() + "s";
+
+
+        }
 
         /// <summary>
         /// Flip this card

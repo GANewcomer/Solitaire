@@ -39,6 +39,30 @@ namespace Solitaire.Cards
 
         }
 
+        /// <summary>
+        /// Create a deck from a deck summary string
+        /// </summary>
+        /// <param name="deckString">The summary string of a deck of cards</param>
+        public Deck(string deckString)
+        {
+            string[] deckSplit = deckString.Split(',');
+            if (deckSplit.Length != Card.MaxRank * Card.NumSuits)
+                throw new ArgumentException("Cannot create deck from this string => " + deckString);
+
+            // setting deck
+            Cards = new Card[deckSplit.Length];
+            for (int i = 0; i < deckSplit.Length; i++)
+            {
+                string cardString = deckSplit[i].Replace("{", "");
+                cardString = cardString.Replace("}", "");
+
+                Card card = new Card(cardString);
+                Cards[i] = card;
+
+            }
+
+        }
+
 
         /// <summary>
         /// Shuffle this deck of cards into a new arrangement

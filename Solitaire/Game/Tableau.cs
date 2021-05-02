@@ -7,9 +7,17 @@ using Solitaire.Cards;
 
 namespace Solitaire.Game
 {
+    public enum BoardStatus
+    {
+        InProgress,
+        GameLost,
+        GameWon
+    }
+
     public class Tableau : BindableBase
     {
         private ObservableCollection<Move> moves = new ObservableCollection<Move>();
+        private int faceDownCards;
 
         public int HandIncrement = 3;
 
@@ -33,6 +41,13 @@ namespace Solitaire.Game
         public List<string> History { get; private set; } = new List<string>();
 
         public bool WasWon { get; }
+
+        public int FaceDownCards { get => this.faceDownCards;
+            private set
+            {
+                SetProperty(ref this.faceDownCards, value);
+            }
+        }
 
 
         public Tableau(Deck deck)
@@ -97,6 +112,8 @@ namespace Solitaire.Game
                 stack.TopCard.Flip();
             }
 
+            UpdateBoard();
+
             // check
             if (Hand.CardCount != 24)
                 throw new InvalidOperationException("Stack dealing was not correct");
@@ -132,6 +149,29 @@ namespace Solitaire.Game
 
             return newTableau;
         }
+
+        public BoardStatus UpdateBoard()
+        {
+            // updating number of face down cards
+            FaceDownCards = 0;
+            foreach (CardStack stack in MainStacks.Values)   
+            {
+                foreach (Card card in stack.Stack)
+                {
+                    if (!card.IsFaceUp)
+                        FaceDownCards++;
+                }
+            }
+
+            FaceDownCards += Hand.CardCount;
+            FaceDownCards += HandFlip.CardCount - (HandFlip.CardCount > 0 ? 1 : 0);
+
+            if (FaceDownCards == 0)
+                return BoardStatus.GameWon;
+            else
+                return BoardStatus.InProgress;
+        }
+
 
         /// <summary>
         /// Generate a summary of this tableau
