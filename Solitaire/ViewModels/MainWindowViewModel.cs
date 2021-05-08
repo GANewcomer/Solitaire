@@ -5,6 +5,7 @@ using Solitaire.Game;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 
@@ -65,6 +66,7 @@ namespace Solitaire.ViewModels
         public DelegateCommand NewGameCommand { get; set; }
 
         public DelegateCommand PerformMoveCommand { get; set; }
+        public DelegateCommand UndoMoveCommand { get; set; }
 
         #endregion Commands
 
@@ -83,6 +85,7 @@ namespace Solitaire.ViewModels
 
             //Commands
             PerformMoveCommand = new DelegateCommand(PerformMove);
+            UndoMoveCommand = new DelegateCommand(UndoMove);
             NewGameCommand = new DelegateCommand(NewGame);
         }
 
@@ -109,6 +112,15 @@ namespace Solitaire.ViewModels
                 MessageBox.Show(string.Format("Congratulations human. You won the game in {0} moves", tableau.Moves.Count), "You Win!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             else if (status == BoardStatus.GameLost)
                 MessageBox.Show(string.Format("Sorry human. It's too bad that you failed so terribly. But at least you've got an okay personality..."), "You Lost...", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+            Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
+            SelectedMove = Player.Moves.First();
+
+        }
+
+        public void UndoMove()
+        {
+            Tableau.UndoLastMove();
 
             Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
 

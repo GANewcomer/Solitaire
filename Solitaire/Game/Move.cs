@@ -7,15 +7,15 @@ namespace Solitaire.Game
 {
     public struct Move : IComparable
     {
-        public string StackFromName { get; }
+        public string StackFromName { get; private set; }
 
-        public string StackToName { get; }
+        public string StackToName { get; private set; }
 
-        public int NumCards { get; }
+        public int NumCards { get; private set; }
 
-        public bool ReverseCardOrder { get; }
+        public bool ReverseCardOrder { get; private set; }
 
-        public double Ranking { get; }
+        public double Ranking { get; private set; }
 
         public Move(int numCards, CardStack stackFrom, CardStack stackTo, double ranking, bool reverseCardOrder = false)
         {
@@ -24,6 +24,22 @@ namespace Solitaire.Game
             NumCards = numCards;
             Ranking = ranking;
             ReverseCardOrder = reverseCardOrder;
+        }
+
+        /// <summary>
+        /// Create a move that is the opposite to this move
+        /// </summary>
+        /// <returns></returns>
+        public Move Opposite()
+        {
+            return new Move()
+            {
+                StackFromName = StackToName,
+                StackToName = StackFromName,
+                NumCards = NumCards,
+                ReverseCardOrder = ReverseCardOrder,
+                Ranking = Ranking,
+            };
         }
 
         public override string ToString()

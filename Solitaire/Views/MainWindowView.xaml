@@ -34,6 +34,7 @@
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="200"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="*"/>
@@ -42,7 +43,11 @@
                 <TextBlock Grid.Row="0" Text="Control"
                            HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-                <GroupBox Grid.Row="1" Header="Moves">
+                <StackPanel Grid.Row="1">
+                    <Button Content="Undo Move" Command="{Binding UndoMoveCommand}"/>
+                </StackPanel>
+                
+                <GroupBox Grid.Row="2" Header="Moves">
                     <ListBox ItemsSource="{Binding Player.Moves}"
                              SelectedItem="{Binding SelectedMove}">
                         <ListBox.ItemTemplate>
@@ -53,9 +58,9 @@
                     </ListBox>
                 </GroupBox>
 
-                <Button Grid.Row="2" Content="Perform Move" Command="{Binding PerformMoveCommand}"/>
+                <Button Grid.Row="3" Content="Perform Move" Command="{Binding PerformMoveCommand}"/>
 
-                <GroupBox Grid.Row="3" Header="Move History">
+                <GroupBox Grid.Row="4" Header="Move History">
                     <ListBox ItemsSource="{Binding Tableau.Moves}"/>
                 </GroupBox>
             </Grid>

@@ -287,6 +287,11 @@ namespace Solitaire.Game
             CardCount = Stack.Count;
         }
 
+        public void UpdateStackCount()
+        {
+            CardCount = Stack.Count;
+        }
+
         #endregion Methods
 
         #region Constructors

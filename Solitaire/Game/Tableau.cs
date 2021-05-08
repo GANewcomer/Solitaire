@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using Prism.Mvvm;
 using Solitaire.Cards;
@@ -120,6 +121,21 @@ namespace Solitaire.Game
 
         }
 
+        public CardStack GetStack(string stackName)
+        {
+            CardStack stack = null;
+            if (stackName.Contains("Main"))
+                stack = MainStacks[stackName];
+            else if (stackName.Contains("Ace"))
+                stack = AceStacks[stackName];
+            else if (stackName == "Hand")
+                stack = Hand;
+            else if (stackName == "HandFlip")
+                stack = HandFlip;
+
+            return stack;
+        }
+
 
         /// <summary>
         /// Create a copy of this current tableau
@@ -148,6 +164,47 @@ namespace Solitaire.Game
 
 
             return newTableau;
+        }
+
+        public void UndoLastMove()
+        {
+            if (Moves.Count == 0)
+                return;
+
+            Move lastMove = Moves.Last();
+            Move undoMove = lastMove.Opposite();
+
+            // getting stacks
+            CardStack stackTakeFrom = GetStack(undoMove.StackFromName);
+            CardStack stackReturnTo = GetStack(undoMove.StackToName);
+
+            // flipping top card back over
+            if (stackReturnTo.CardCount > 0 && stackReturnTo.TopCard.IsFaceUp)
+                stackReturnTo.TopCard.Flip();
+
+            // undoing the move
+            List<Card> cards = stackTakeFrom.TakeTopMost(undoMove.NumCards).Stack.ToList();
+            bool setToFlipped = false;
+            if (stackTakeFrom.Name == "HandFlip")
+                setToFlipped = true;
+            if (stackTakeFrom.Name == "Hand" && !cards.First().IsFaceUp)
+                cards.First().Flip();
+
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                int iCard = undoMove.ReverseCardOrder ? cards.Count - i - 1 : i;
+
+                if (setToFlipped && cards[iCard].IsFaceUp)
+                    cards[iCard].Flip();
+
+                stackReturnTo.Stack.Add(cards[iCard]);
+            }
+            stackReturnTo.UpdateStackCount();
+
+            // updating
+            UpdateBoard();
+            Moves.RemoveAt(Moves.Count - 1);
         }
 
         public BoardStatus UpdateBoard()

@@ -78,27 +78,9 @@ namespace Solitaire.Game
 
         public BoardStatus PerformMove(Tableau tableau, Move move)
         {
-            // from stack
-            CardStack stackFrom = null;
-            if (move.StackFromName.Contains("Main"))
-                stackFrom = tableau.MainStacks[move.StackFromName];
-            else if (move.StackFromName.Contains("Ace"))
-                stackFrom = tableau.AceStacks[move.StackFromName];
-            else if (move.StackFromName == "Hand")
-                stackFrom = tableau.Hand;
-            else if (move.StackFromName == "HandFlip")
-                stackFrom = tableau.HandFlip;
-
-            // to stack
-            CardStack stackTo = null;
-            if (move.StackToName.Contains("Main"))
-                stackTo = tableau.MainStacks[move.StackToName];
-            else if (move.StackToName.Contains("Ace"))
-                stackTo = tableau.AceStacks[move.StackToName];
-            else if (move.StackToName == "Hand")
-                stackTo = tableau.Hand;
-            else if (move.StackToName == "HandFlip")
-                stackTo = tableau.HandFlip;
+            // from-to stack
+            CardStack stackFrom = tableau.GetStack(move.StackFromName);
+            CardStack stackTo = tableau.GetStack(move.StackToName);
 
             // moving
             if (stackFrom != null && stackTo != null)
