@@ -31,17 +31,18 @@
         </Grid.RowDefinitions>
         
         <!--Status-->
-        <TextBlock Grid.Column="6" Grid.Row="4" Text="# Cards uncovered:"
-                   HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Red"/>
-        <TextBlock Grid.Column="7" Grid.Row="4" Text="{Binding ElementName=this, Path=Tableau.FaceDownCards}"
-                   HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="Red"
-                   Padding="5,0,0,0"/>
-
-        <ProgressBar Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="5"
+        <ProgressBar Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="7"
                      Value="{Binding ElementName=this, Path=Tableau.CardsProgress, Mode=OneWay}"
                      Maximum="{Binding ElementName=this, Path=Tableau.MaxUnflippedCards, Mode=OneWay}"
                      >
         </ProgressBar>
+
+        <TextBlock Grid.Column="1" Grid.Row="4" Text="# Cards uncovered:"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Red"/>
+        <TextBlock Grid.Column="2" Grid.Row="4" Text="{Binding ElementName=this, Path=Tableau.FaceDownCards}"
+                   HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="Red"
+                   Padding="5,0,0,0"/>
+
         
         <!--Ace Stack-->
         <local:CardStackSingleControl Grid.Column="0" Grid.Row="0"
