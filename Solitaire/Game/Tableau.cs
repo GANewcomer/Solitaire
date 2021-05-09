@@ -19,6 +19,8 @@ namespace Solitaire.Game
     {
         private ObservableCollection<Move> moves = new ObservableCollection<Move>();
         private int faceDownCards;
+        private int cardsLeft = 0;
+        private int maxUnflippedCards;
 
         public int HandIncrement = 3;
 
@@ -47,6 +49,20 @@ namespace Solitaire.Game
             private set
             {
                 SetProperty(ref this.faceDownCards, value);
+            }
+        }
+
+        public int CardsProgress { get => this.cardsLeft;
+            private set
+            {
+                SetProperty(ref this.cardsLeft, value);
+            }
+        }
+
+        public int MaxUnflippedCards { get => this.maxUnflippedCards;
+            private set
+            {
+                SetProperty(ref this.maxUnflippedCards, value);
             }
         }
 
@@ -114,6 +130,7 @@ namespace Solitaire.Game
             }
 
             UpdateBoard();
+            MaxUnflippedCards = FaceDownCards;
 
             // check
             if (Hand.CardCount != 24)
@@ -230,6 +247,8 @@ namespace Solitaire.Game
 
             FaceDownCards += Hand.CardCount;
             FaceDownCards += HandFlip.CardCount - (HandFlip.CardCount > 0 ? 1 : 0);
+
+            CardsProgress = MaxUnflippedCards - FaceDownCards;
 
             if (FaceDownCards == 0)
                 return BoardStatus.GameWon;

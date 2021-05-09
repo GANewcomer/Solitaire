@@ -37,6 +37,12 @@
                    HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="Red"
                    Padding="5,0,0,0"/>
 
+        <ProgressBar Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="5"
+                     Value="{Binding ElementName=this, Path=Tableau.CardsProgress, Mode=OneWay}"
+                     Maximum="{Binding ElementName=this, Path=Tableau.MaxUnflippedCards, Mode=OneWay}"
+                     >
+        </ProgressBar>
+        
         <!--Ace Stack-->
         <local:CardStackSingleControl Grid.Column="0" Grid.Row="0"
             CardStack="{Binding ElementName=this, Path=Tableau.AceStacks, 
