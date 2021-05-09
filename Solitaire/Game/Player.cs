@@ -106,7 +106,10 @@ namespace Solitaire.Game
                 foreach (CardStack stack in tableau.MainStacks.Values)
                 {
                     if (stack.TopCard != null && !stack.TopCard.IsFaceUp)
+                    {
                         stack.TopCard.Flip();
+                        move.WasACardFlipped = true;
+                    }
                 }
                 foreach (CardStack stack in tableau.AceStacks.Values)
                 {

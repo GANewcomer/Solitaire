@@ -17,6 +17,11 @@ namespace Solitaire.Game
 
         public double Ranking { get; private set; }
 
+        /// <summary>
+        /// Whether a card was flipped over as a result of this move
+        /// </summary>
+        public bool WasACardFlipped { get; set; }
+
         public Move(int numCards, CardStack stackFrom, CardStack stackTo, double ranking, bool reverseCardOrder = false)
         {
             StackFromName = stackFrom.Name;
@@ -24,6 +29,7 @@ namespace Solitaire.Game
             NumCards = numCards;
             Ranking = ranking;
             ReverseCardOrder = reverseCardOrder;
+            WasACardFlipped = false;
         }
 
         /// <summary>
@@ -39,6 +45,7 @@ namespace Solitaire.Game
                 NumCards = NumCards,
                 ReverseCardOrder = ReverseCardOrder,
                 Ranking = Ranking,
+                WasACardFlipped = WasACardFlipped,
             };
         }
 

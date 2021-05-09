@@ -178,24 +178,32 @@ namespace Solitaire.Game
             CardStack stackTakeFrom = GetStack(undoMove.StackFromName);
             CardStack stackReturnTo = GetStack(undoMove.StackToName);
 
-            // flipping top card back over
-            if (stackReturnTo.CardCount > 0 && stackReturnTo.TopCard.IsFaceUp)
-                stackReturnTo.TopCard.Flip();
+            // main or ace stack move
+            if ((undoMove.StackFromName.Contains("Ace") || undoMove.StackFromName.Contains("Main")) && (undoMove.StackToName.Contains("Ace") || undoMove.StackToName.Contains("Main")))
+            {
+                // flipping top card back over
+                if (stackReturnTo.CardCount > 0 && stackReturnTo.TopCard.IsFaceUp && undoMove.WasACardFlipped)
+                    stackReturnTo.TopCard.Flip();
+            }
+
+            // hand and handflip move
+            bool setFaceDown = false;
+            bool setFaceUp = false;
+            if (stackTakeFrom.Name == "HandFlip" && stackReturnTo.Name == "Hand")
+                setFaceDown = true;
+            if (stackTakeFrom.Name == "Hand" && stackReturnTo.Name == "HandFlip")
+                setFaceUp = true;
 
             // undoing the move
             List<Card> cards = stackTakeFrom.TakeTopMost(undoMove.NumCards).Stack.ToList();
-            bool setToFlipped = false;
-            if (stackTakeFrom.Name == "HandFlip")
-                setToFlipped = true;
-            if (stackTakeFrom.Name == "Hand" && !cards.First().IsFaceUp)
-                cards.First().Flip();
-
-
             for (int i = 0; i < cards.Count; i++)
             {
                 int iCard = undoMove.ReverseCardOrder ? cards.Count - i - 1 : i;
 
-                if (setToFlipped && cards[iCard].IsFaceUp)
+                // flipping if necessary
+                if (setFaceDown && cards[iCard].IsFaceUp)
+                    cards[iCard].Flip();
+                else if (setFaceUp && !cards[iCard].IsFaceUp)
                     cards[iCard].Flip();
 
                 stackReturnTo.Stack.Add(cards[iCard]);
