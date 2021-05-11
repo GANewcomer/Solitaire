@@ -24,53 +24,73 @@
             </MenuItem>
         </Menu>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <!--Control-->
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="200"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <TabControl Grid.Row="1">
+            <TabItem Header="Main Game">
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Text="Control"
+                    <!--Control-->
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="200"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Control"
                            HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-                <StackPanel Grid.Row="1">
-                    <Button Content="Undo Move" Command="{Binding UndoMoveCommand}"/>
-                </StackPanel>
-                
-                <GroupBox Grid.Row="2" Header="Moves">
-                    <ListBox ItemsSource="{Binding Player.Moves}"
+
+                        <GroupBox Grid.Row="1" Header="Moves">
+                            <ListBox ItemsSource="{Binding Player.Moves}"
                              SelectedItem="{Binding SelectedMove}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <controls:MoveControl Move="{Binding}"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </GroupBox>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <controls:MoveControl Move="{Binding}"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </GroupBox>
 
-                <Button Grid.Row="3" Content="Perform Move" Command="{Binding PerformMoveCommand}"/>
+                        <Grid Grid.Row="2" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="Perform Move"
+                            Foreground="DarkGreen"
+                            Command="{Binding PerformMoveCommand}"/>
+                            <Button Grid.Column="1" Content="Undo Move"
+                            Foreground="DarkRed"
+                            Command="{Binding UndoMoveCommand}"/>
+                            <Button Grid.Column="2" Content="Auto Solve"
+                            Foreground="DarkOrange"
+                            Command="{Binding AutoSolveCommand}"/>
+                        </Grid>
 
-                <GroupBox Grid.Row="4" Header="Move History">
-                    <ListBox ItemsSource="{Binding Tableau.Moves}"/>
-                </GroupBox>
-            </Grid>
-            
-            
-            <!--Tableau-->
-            <controls:TableauControl Grid.Column="1" 
+                        <GroupBox Grid.Row="4" Header="Move History">
+                            <ListBox ItemsSource="{Binding Tableau.Moves}"/>
+                        </GroupBox>
+                    </Grid>
+
+
+                    <!--Tableau-->
+                    <controls:TableauControl Grid.Column="1" 
                                  Tableau="{Binding Tableau}"/>
 
-        </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Mass Game Solver">
+                
+            </TabItem>
+        </TabControl>
+        
         
     </Grid>
 </Window>

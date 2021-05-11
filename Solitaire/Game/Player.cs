@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Prism.Mvvm;
 using Solitaire.Cards;
 
@@ -22,6 +23,7 @@ namespace Solitaire.Game
             }
         }
 
+        public Dictionary<int, List<string>> GameStates { get; set; } = new Dictionary<int, List<string>>();
 
         public Player()
         {
@@ -29,49 +31,62 @@ namespace Solitaire.Game
         }
 
 
-        public void StartGame()
+        public BoardStatus SolveGame(Tableau tableau)
         {
-            //Shuffling deck
-            Deck deck = new Deck();
-            //deck.ShuffleDeck();
-
-            //Creating tableau
-            Tableau tableau = new Tableau(deck);
-
             //Beginning solving
-            EvaluateGameState(tableau);
+            return EvaluateGameState(tableau);
 
         }
 
         public int CycleCounter = 0;
 
-        public void EvaluateGameState(Tableau tableau)
+        public BoardStatus EvaluateGameState(Tableau tableau, int gameID = -1)
         {
-            CycleCounter++;
+            if (gameID == -1)
+            {
+                gameID = GameStates.Count;
+                GameStates.Add(gameID, new List<string>());
+            }
 
             //Check moves
-            ObservableCollection<Move> moves = new ObservableCollection<Move>(CheckAvailableMoves(tableau));
+            List<Move> moves = CheckAvailableMoves(tableau);
 
             //Looping through moves
             foreach (Move move in moves)
             {
-                // copying tableau
-                Tableau copyTableau = tableau.Copy();
+                CycleCounter++;
+
+                //Thread.Sleep(100);
 
                 // performing move
-                PerformMove(copyTableau, move);
+                BoardStatus status = PerformMove(tableau, move);
+
+                if (status != BoardStatus.InProgress)
+                    return status;
 
                 // checking tableau state
-                string state = copyTableau.GetSummary();
-                if (copyTableau.History.Contains(state))
+                string state = tableau.GetSummary();
+                if (GameStates[gameID].Contains(state))
+                {
+                    // undoing move for the next move to pick up with
+                    tableau.UndoLastMove();
                     continue;
+                }
 
-                copyTableau.History.Add(state);
+                GameStates[gameID].Add(state);
 
                 // analyzing tableau
-                EvaluateGameState(copyTableau);
+                 status = EvaluateGameState(tableau, gameID);
+
+                if (status != BoardStatus.InProgress)
+                    return status;
+
+                // undoing move for the next move to pick up with
+                tableau.UndoLastMove();
 
             }
+
+            return BoardStatus.GameLost;
 
         }
 
@@ -91,12 +106,12 @@ namespace Solitaire.Game
                     successful = stackFrom.TransferTopCard(stackTo);
                 else
                 {
-                    CardStack movedCards;
+                    List<Card> movedCards;
                     if (move.ReverseCardOrder)
                         movedCards = stackFrom.DealTopMost(move.NumCards);
                     else
                         movedCards = stackFrom.TakeTopMost(move.NumCards);
-                    successful = stackTo.AddStack(movedCards);
+                    successful = stackTo.AddStack(new CardStack(movedCards, new RuleNone()));
                 }
 
                 if (!successful)
@@ -127,7 +142,7 @@ namespace Solitaire.Game
                         card.Flip();
                 }
 
-                tableau.Moves.Add(move);
+                tableau.AddMove(move);
                 BoardStatus status = tableau.UpdateBoard();
                 return status;
             }
@@ -235,11 +250,11 @@ namespace Solitaire.Game
             }
 
             // hand flipping
-            int handRanking = 1;
+            int handRanking = 2;
             if (tableau.Hand.CardCount != 0)
-                possibleMoves.Add(new Move(tableau.HandIncrement, tableau.Hand, tableau.HandFlip, 2, true));           // regular hand increment
-            else
-                possibleMoves.Add(new Move(tableau.HandFlip.CardCount, tableau.HandFlip, tableau.Hand, 2, true));      // resetting hand
+                possibleMoves.Add(new Move(tableau.HandIncrement, tableau.Hand, tableau.HandFlip, handRanking, true));           // regular hand increment
+            else if (tableau.HandFlip.CardCount != 0)
+                possibleMoves.Add(new Move(tableau.HandFlip.CardCount, tableau.HandFlip, tableau.Hand, handRanking, true));      // resetting hand
 
             possibleMoves.Sort();
 

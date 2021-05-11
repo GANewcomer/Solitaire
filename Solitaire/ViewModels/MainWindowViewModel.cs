@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 
 namespace Solitaire.ViewModels
@@ -67,6 +68,7 @@ namespace Solitaire.ViewModels
 
         public DelegateCommand PerformMoveCommand { get; set; }
         public DelegateCommand UndoMoveCommand { get; set; }
+        public DelegateCommand AutoSolveCommand { get; set; }
 
         #endregion Commands
 
@@ -79,7 +81,6 @@ namespace Solitaire.ViewModels
             MainDeck = new Deck(winningDeck);
             Player = new Player();
 
-
             Tableau = new Tableau(MainDeck);
             Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
 
@@ -87,6 +88,7 @@ namespace Solitaire.ViewModels
             PerformMoveCommand = new DelegateCommand(PerformMove);
             UndoMoveCommand = new DelegateCommand(UndoMove);
             NewGameCommand = new DelegateCommand(NewGame);
+            AutoSolveCommand = new DelegateCommand(AutoSolve);
         }
 
 
@@ -123,6 +125,28 @@ namespace Solitaire.ViewModels
             Tableau.UndoLastMove();
 
             Player.Moves = new ObservableCollection<Move>(Player.CheckAvailableMoves(Tableau));
+
+        }
+
+        public void AutoSolve()
+        {
+            Thread solveThread = new Thread(() =>
+            {
+                BoardStatus endStatus = Player.SolveGame(Tableau);
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (endStatus == BoardStatus.GameWon)
+                        MessageBox.Show(string.Format("Congratulations human. You won the game in {0} moves. (though you used auto-solve...)", tableau.Moves.Count), "You Win!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    else if (endStatus == BoardStatus.GameLost)
+                        MessageBox.Show(string.Format("Sorry human. It's too bad that you failed so terribly. But at least you've got an okay personality..."), "You Lost...", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    else
+                        MessageBox.Show("strange...");
+                });
+            });
+
+            solveThread.ApartmentState = ApartmentState.STA;
+            solveThread.Start();
 
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Windows.Data;
 using Prism.Mvvm;
 using Solitaire.Cards;
 
@@ -43,7 +44,7 @@ namespace Solitaire.Game
 
         public List<string> History { get; private set; } = new List<string>();
 
-        public bool WasWon { get; }
+        public BoardStatus Status { get; private set; }
 
         public int FaceDownCards { get => this.faceDownCards;
             private set
@@ -66,7 +67,8 @@ namespace Solitaire.Game
             }
         }
 
-
+        private object movesLock = new object();
+        
         public Tableau(Deck deck)
         {
             InitialDeck = deck;
@@ -132,10 +134,21 @@ namespace Solitaire.Game
             UpdateBoard();
             MaxUnflippedCards = FaceDownCards;
 
+            // sync
+            BindingOperations.EnableCollectionSynchronization(Moves, this.movesLock);
+
             // check
             if (Hand.CardCount != 24)
                 throw new InvalidOperationException("Stack dealing was not correct");
 
+        }
+
+        public void AddMove(Move move)
+        {
+            lock (this.movesLock)
+            {
+                Moves.Add(move);
+            }
         }
 
         public CardStack GetStack(string stackName)
@@ -212,7 +225,7 @@ namespace Solitaire.Game
                 setFaceUp = true;
 
             // undoing the move
-            List<Card> cards = stackTakeFrom.TakeTopMost(undoMove.NumCards).Stack.ToList();
+            List<Card> cards = stackTakeFrom.TakeTopMost(undoMove.NumCards);
             for (int i = 0; i < cards.Count; i++)
             {
                 int iCard = undoMove.ReverseCardOrder ? cards.Count - i - 1 : i;
@@ -251,9 +264,10 @@ namespace Solitaire.Game
             CardsProgress = MaxUnflippedCards - FaceDownCards;
 
             if (FaceDownCards == 0)
-                return BoardStatus.GameWon;
+                Status = BoardStatus.GameWon;
             else
-                return BoardStatus.InProgress;
+                Status = BoardStatus.InProgress;
+            return Status;
         }
 
 

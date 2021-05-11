@@ -5,6 +5,7 @@ using Solitaire.Cards;
 using System.Linq;
 using Prism.Mvvm;
 using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace Solitaire.Game
 {
@@ -30,6 +31,8 @@ namespace Solitaire.Game
             private set
             {
                 SetProperty(ref this.stack, value);
+                UpdateThreadSyncing();
+
             }
         }
 
@@ -52,10 +55,13 @@ namespace Solitaire.Game
         /// </summary>
         public Card TopCard { get 
             {
-                if (Stack == null || Stack.Count == 0)
-                    return null;
+                lock (this.stackLock)
+                {
+                    if (Stack == null || Stack.Count == 0)
+                        return null;
 
-                return Stack.Last();
+                    return Stack.Last();
+                }
             }
         }
         
@@ -64,12 +70,17 @@ namespace Solitaire.Game
         /// </summary>
         public Card BaseCard { get 
             {
-                if (Stack == null || Stack.Count == 0)
-                    return null;
+                lock (this.stackLock)
+                {
+                    if (Stack == null || Stack.Count == 0)
+                        return null;
 
-                return Stack.First();
+                    return Stack.First();
+                }
             }
         }
+
+        private object stackLock = new object();
 
         #endregion Properties
 
@@ -85,9 +96,12 @@ namespace Solitaire.Game
             if (!AddRule.IsCardAllowedToBeAdded(card, TopCard))
                 return false;
 
-            Stack.Add(card);
-            CardCount = Stack.Count;
-            return true;
+            lock (this.stackLock)
+            {
+                Stack.Add(card);
+                CardCount = Stack.Count;
+                return true;
+            }
         }
 
         /// <summary>
@@ -97,8 +111,11 @@ namespace Solitaire.Game
         /// <returns></returns>
         public bool AddStack(CardStack stack)
         {
-            if (stack.Stack.Count == 0)
-                return false;
+            lock (this.stackLock)
+            {
+                if (stack.Stack.Count == 0)
+                    return false;
+            }
 
             // checking base card for transfer
             if (!AddRule.IsCardAllowedToBeAdded(stack.BaseCard, TopCard))
@@ -122,18 +139,21 @@ namespace Solitaire.Game
         /// <returns></returns>
         public Card TakeCard(int position)
         {
-            if (Stack == null || Stack.Count == 0)
-                return null;
-            if (position <= 0 || Stack.Count < position)
-                throw new ArgumentException("Position must be >= 1 and <= " + Stack.Count);
+            lock (this.stackLock)
+            {
+                if (Stack == null || Stack.Count == 0)
+                    return null;
+                if (position <= 0 || Stack.Count < position)
+                    throw new ArgumentException("Position must be >= 1 and <= " + Stack.Count);
 
-            //Getting the position from the end
-            int reversePosition = Stack.Count - position;
+                //Getting the position from the end
+                int reversePosition = Stack.Count - position;
 
-            Card removedCard = Stack[reversePosition];
-            Stack.RemoveAt(reversePosition);
-            CardCount = Stack.Count;
-            return removedCard;
+                Card removedCard = Stack[reversePosition];
+                Stack.RemoveAt(reversePosition);
+                CardCount = Stack.Count;
+                return removedCard;
+            }
         }
 
 
@@ -142,10 +162,13 @@ namespace Solitaire.Game
         /// </summary>
         /// <param name="length">The number of cards to take from the top</param>
         /// <returns>Stack of cards in the same order that they were in this stack</returns>
-        public CardStack TakeTopMost(int length)
+        public List<Card> TakeTopMost(int length)
         {
-            if (Stack.Count == 0)
-                return new CardStack(AddRule);
+            lock (this.stackLock)
+            {
+                if (Stack.Count == 0)
+                    return new List<Card>();
+            }
             if (length <= 0)
                 throw new ArgumentException("Length must be >= 1");
 
@@ -159,7 +182,7 @@ namespace Solitaire.Game
             // reversing stack (to match original order)
             topmost.ReverseStack();
 
-            return new CardStack(topmost, AddRule);
+            return topmost.Stack.ToList();
         }
 
 
@@ -168,10 +191,13 @@ namespace Solitaire.Game
         /// </summary>
         /// <param name="length">The number of cards to deal out</param>
         /// <returns>Stack of cards</returns>
-        public CardStack DealTopMost(int length)
+        public List<Card> DealTopMost(int length)
         {
-            if (Stack.Count == 0)
-                return new CardStack(AddRule);
+            lock (this.stackLock)
+            {
+                if (Stack.Count == 0)
+                    return new List<Card>();
+            }
             if (length <= 0)
                 throw new ArgumentException("Length must be >= 1");
 
@@ -182,7 +208,7 @@ namespace Solitaire.Game
                 TransferTopCard(topmost);
             }
 
-            return new CardStack(topmost, AddRule);
+            return topmost.Stack.ToList();
         }
 
         /// <summary>
@@ -192,18 +218,21 @@ namespace Solitaire.Game
         /// <returns></returns>
         public Card SeeCard(int position)
         {
-            if (Stack == null || Stack.Count == 0)
-                return null;
-            if (position <= 0)
-                throw new ArgumentException("Position must be > 0");
+            lock (this.stackLock)
+            {
+                if (Stack == null || Stack.Count == 0)
+                    return null;
+                if (position <= 0)
+                    throw new ArgumentException("Position must be > 0");
 
-            //Getting the position from the end
-            int reversePosition = Stack.Count - position;
+                //Getting the position from the end
+                int reversePosition = Stack.Count - position;
 
-            if (reversePosition < 0)
-                return Stack.First();
-            else
-                return Stack[reversePosition];
+                if (reversePosition < 0)
+                    return Stack.First();
+                else
+                    return Stack[reversePosition];
+            }
 
         }
 
@@ -215,20 +244,23 @@ namespace Solitaire.Game
         /// <returns></returns>
         public int GetPosition(Card card)
         {
-            int pos = -1;
-            for (int i = 0; i < Stack.Count; i++)
+            lock (this.stackLock)
             {
-                if (Stack[i].ShortName == card.ShortName)
+                int pos = -1;
+                for (int i = 0; i < Stack.Count; i++)
                 {
-                    pos = i;
-                    break;
+                    if (Stack[i].ShortName == card.ShortName)
+                    {
+                        pos = i;
+                        break;
+                    }
                 }
-            }
 
-            if (pos != -1)
-                return CardCount - pos;
-            else
-                return pos;
+                if (pos != -1)
+                    return CardCount - pos;
+                else
+                    return pos;
+            }
         }
 
         /// <summary>
@@ -277,19 +309,34 @@ namespace Solitaire.Game
         /// <returns></returns>
         public void ReverseStack()
         {
-            // reversing stack
-            CardStack reversed = new CardStack(AddRule);
-            while (this.TransferTopCard(reversed))
-            { }
+            lock (this.stackLock)
+            {
+                // reversing stack
+                CardStack reversed = new CardStack(AddRule);
+                while (this.TransferTopCard(reversed))
+                { }
 
-            // setting
-            Stack = reversed.Stack;
-            CardCount = Stack.Count;
+                // setting
+                Stack.Clear();
+                foreach (Card card in reversed.Stack)
+                {
+                    Stack.Add(card);
+                }
+                CardCount = Stack.Count;
+            }
         }
 
         public void UpdateStackCount()
         {
-            CardCount = Stack.Count;
+            lock (this.stackLock)
+            {
+                CardCount = Stack.Count;
+            }
+        }
+
+        public void UpdateThreadSyncing()
+        {
+            BindingOperations.EnableCollectionSynchronization(Stack, this.stackLock);
         }
 
         #endregion Methods
@@ -304,8 +351,9 @@ namespace Solitaire.Game
         {
             AddRule = addingRule;
             Name = name;
+            Stack = new ObservableCollection<Card>();
             CardCount = Stack.Count;
-
+        
         }
 
 
@@ -314,12 +362,13 @@ namespace Solitaire.Game
         /// </summary>
         /// <param name="stack">The stack of cards to create this stack from</param>
         /// <param name="addingRule">The adding rule</param>
-        public CardStack(CardStack stack, IStackAddRule addingRule, string name = "")
+        public CardStack(List<Card> stack, IStackAddRule addingRule, string name = "")
         {
             AddRule = addingRule;
-            Stack = stack.Stack;
+            Stack = new ObservableCollection<Card>(stack);
             Name = name;
             CardCount = Stack.Count;
+
         }
 
         /// <summary>
@@ -333,6 +382,7 @@ namespace Solitaire.Game
             Stack = new ObservableCollection<Card>(deck.Cards.ToList());
             Name = name;
             CardCount = Stack.Count;
+
         }
 
         #endregion Constructors
@@ -343,27 +393,33 @@ namespace Solitaire.Game
         /// <returns></returns>
         public string GetSummary()
         {
-            string summary = Name + ":{";
-            foreach (Card card in Stack)
+            lock (this.stackLock)
             {
-                if (card.IsFaceUp)
-                    summary += card.ShortName + ",";
-                else
-                    summary += "(H)" + ",";
+                string summary = Name + ":{";
+                foreach (Card card in Stack)
+                {
+                    if (card.IsFaceUp)
+                        summary += card.ShortName + ",";
+                    else
+                        summary += "(H)" + ",";
+                }
+
+                if (Stack.Count > 0)
+                    summary = summary.Substring(0, summary.Length - 1) + "}";
+
+                return summary;
             }
-
-            if (Stack.Count > 0)
-                summary = summary.Substring(0, summary.Length - 1) + "}";
-
-            return summary;
         }
 
         public override string ToString()
         {
-            if (Name != "")
-                return string.Format("Stack[{0}] Name={1}", CardCount, Name);
-            else
-                return string.Format("Stack[{0}]", CardCount);
+            lock (this.stackLock)
+            {
+                if (Name != "")
+                    return string.Format("Stack[{0}] Name={1}", CardCount, Name);
+                else
+                    return string.Format("Stack[{0}]", CardCount);
+            }
 
         }
 
@@ -373,16 +429,19 @@ namespace Solitaire.Game
         /// <returns></returns>
         public CardStack Copy()
         {
-            ObservableCollection<Card> newStack = new ObservableCollection<Card>();
-            foreach (Card card in Stack)
+            lock (this.stackLock)
             {
-                newStack.Add(card.Copy());
+                ObservableCollection<Card> newStack = new ObservableCollection<Card>();
+                foreach (Card card in Stack)
+                {
+                    newStack.Add(card.Copy());
+                }
+
+                var newCardStack = new CardStack(AddRule, Name);
+                newCardStack.Stack = newStack;
+
+                return newCardStack;
             }
-
-            var newCardStack = new CardStack(AddRule, Name);
-            newCardStack.Stack = newStack;
-
-            return newCardStack;
         }
 
     }
