@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Solitaire.ViewModels
@@ -21,6 +22,7 @@ namespace Solitaire.ViewModels
         private Move selectedMove;
         private Tableau tableau;
         private Player player;
+        private int numGames = 10;
 
         public Deck MainDeck
         {
@@ -60,6 +62,17 @@ namespace Solitaire.ViewModels
             }
         }
 
+
+        public int NumGames
+        { 
+            get => this.numGames;
+            set
+            {
+                SetProperty(ref this.numGames, value);
+            }
+        }
+
+
         #endregion Properties
 
         #region Commands
@@ -69,6 +82,7 @@ namespace Solitaire.ViewModels
         public DelegateCommand PerformMoveCommand { get; set; }
         public DelegateCommand UndoMoveCommand { get; set; }
         public DelegateCommand AutoSolveCommand { get; set; }
+        public DelegateCommand RunGamesCommand { get; set; }
 
         #endregion Commands
 
@@ -89,6 +103,7 @@ namespace Solitaire.ViewModels
             UndoMoveCommand = new DelegateCommand(UndoMove);
             NewGameCommand = new DelegateCommand(NewGame);
             AutoSolveCommand = new DelegateCommand(AutoSolve);
+            RunGamesCommand = new DelegateCommand(RunGames);
         }
 
 
@@ -132,17 +147,50 @@ namespace Solitaire.ViewModels
         {
             Thread solveThread = new Thread(() =>
             {
-                BoardStatus endStatus = Player.SolveGame(Tableau);
+                GameSummary endGame = Player.SolveGame(Tableau);
 
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    if (endStatus == BoardStatus.GameWon)
-                        MessageBox.Show(string.Format("Congratulations human. You won the game in {0} moves. (though you used auto-solve...)", tableau.Moves.Count), "You Win!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    else if (endStatus == BoardStatus.GameLost)
+                    if (endGame.Status == BoardStatus.GameWon)
+                        MessageBox.Show(string.Format("Congratulations human. You won the game in {0} moves and {1} cycles (though you used auto-solve...)", endGame.MoveCount, endGame.CycleCount ), "You Win!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    else if (endGame.Status == BoardStatus.GameLost)
                         MessageBox.Show(string.Format("Sorry human. It's too bad that you failed so terribly. But at least you've got an okay personality..."), "You Lost...", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     else
                         MessageBox.Show("strange...");
                 });
+            });
+
+            solveThread.ApartmentState = ApartmentState.STA;
+            solveThread.Start();
+
+        }
+
+        public void RunGames()
+        {
+            Thread solveThread = new Thread(() =>
+            {
+                if (true)
+                {
+                    Parallel.For(0, NumGames, (i) =>
+                    {
+                        Deck newDeck = new Deck();
+                        newDeck.ShuffleDeck();
+                        Tableau newTableau = new Tableau(newDeck);
+
+                        Player.SolveGame(newTableau);
+                    });
+                }
+                else
+                {
+                    for (int i = 0; i < NumGames; i++)
+                    {
+                        MainDeck.ShuffleDeck();
+                        Tableau newTableau = new Tableau(MainDeck);
+
+                        Player.SolveGame(newTableau);
+
+                    }
+                }
             });
 
             solveThread.ApartmentState = ApartmentState.STA;

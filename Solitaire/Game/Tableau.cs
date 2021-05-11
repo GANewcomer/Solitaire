@@ -44,7 +44,7 @@ namespace Solitaire.Game
 
         public List<string> History { get; private set; } = new List<string>();
 
-        public BoardStatus Status { get; private set; }
+        public BoardStatus Status { get; set; }
 
         public int FaceDownCards { get => this.faceDownCards;
             private set

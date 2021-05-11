@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Windows.Data;
 using Prism.Mvvm;
 using Solitaire.Cards;
 
@@ -23,29 +24,48 @@ namespace Solitaire.Game
             }
         }
 
-        public Dictionary<int, List<string>> GameStates { get; set; } = new Dictionary<int, List<string>>();
+        public ObservableCollection<GameSummary> Games { get; set; } = new ObservableCollection<GameSummary>();
+
+        private object gamesLock = new object();
 
         public Player()
         {
-
+            BindingOperations.EnableCollectionSynchronization(Games, gamesLock);
         }
 
 
-        public BoardStatus SolveGame(Tableau tableau)
+        public GameSummary SolveGame(Tableau tableau)
         {
-            //Beginning solving
-            return EvaluateGameState(tableau);
+            //Creating game
+            int count = 0;
+            int gameID;
+            GameSummary newGame;
+            lock (this.gamesLock)
+            {
+                gameID = Games.Count;
+                newGame = new GameSummary(gameID, tableau.InitialDeck);
+                Games.Add(newGame);
 
+            }
+
+
+            //Solving game
+            BoardStatus status = EvaluateGameState(tableau, ref count, gameID);
+            tableau.Status = status;
+            newGame.FinishGame(tableau, count);
+
+            return newGame;
         }
 
-        public int CycleCounter = 0;
-
-        public BoardStatus EvaluateGameState(Tableau tableau, int gameID = -1)
+        public BoardStatus EvaluateGameState(Tableau tableau, ref int cycleCount, int gameID = -1)
         {
             if (gameID == -1)
             {
-                gameID = GameStates.Count;
-                GameStates.Add(gameID, new List<string>());
+                lock (this.gamesLock)
+                {
+                    Games.Add(new GameSummary(Games.Count, tableau.InitialDeck));
+                    gameID = Games.Count;
+                }
             }
 
             //Check moves
@@ -54,7 +74,7 @@ namespace Solitaire.Game
             //Looping through moves
             foreach (Move move in moves)
             {
-                CycleCounter++;
+                cycleCount++;
 
                 //Thread.Sleep(100);
 
@@ -66,17 +86,20 @@ namespace Solitaire.Game
 
                 // checking tableau state
                 string state = tableau.GetSummary();
-                if (GameStates[gameID].Contains(state))
+                lock (this.gamesLock)
                 {
-                    // undoing move for the next move to pick up with
-                    tableau.UndoLastMove();
-                    continue;
+                    if (Games[gameID].GameStates.Contains(state))
+                    {
+                        // undoing move for the next move to pick up with
+                        tableau.UndoLastMove();
+                        continue;
+                    }
+
+                    Games[gameID].GameStates.Add(state);
                 }
 
-                GameStates[gameID].Add(state);
-
                 // analyzing tableau
-                 status = EvaluateGameState(tableau, gameID);
+                status = EvaluateGameState(tableau, ref cycleCount, gameID);
 
                 if (status != BoardStatus.InProgress)
                     return status;
@@ -85,6 +108,7 @@ namespace Solitaire.Game
                 tableau.UndoLastMove();
 
             }
+
 
             return BoardStatus.GameLost;
 
