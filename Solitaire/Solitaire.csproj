@@ -36,4 +36,10 @@
     <Folder Include="Behavior\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="gamesLog.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

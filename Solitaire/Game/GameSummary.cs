@@ -65,5 +65,10 @@ namespace Solitaire.Game
 
         }
 
+        public string SummaryCSV()
+        {
+            return string.Format("{0},{1},{2},{3},{4}", Status, MoveCount, CycleCount, Difficulty, OriginalDeck.ToString());
+        }
+
     }
 }

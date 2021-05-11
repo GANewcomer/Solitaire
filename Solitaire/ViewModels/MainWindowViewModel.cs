@@ -5,6 +5,7 @@ using Solitaire.Game;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -169,6 +170,29 @@ namespace Solitaire.ViewModels
         {
             Thread solveThread = new Thread(() =>
             {
+                TextWriter tw = new StreamWriter("gamesLog.txt");
+                Stack<string> gamesToSave = new Stack<string>();
+
+                bool running = true;
+                Task saveTask = new Task(() =>
+                {
+                    while (running || gamesToSave.Count > 0)
+                    {
+                        Thread.Sleep(50);
+
+                        lock (gamesToSave)
+                        {
+                            if (gamesToSave.Count > 0)
+                            {
+                                string gameSummary = gamesToSave.Pop();
+                                tw.WriteLine(gameSummary);
+                            }
+                        }
+
+                    }
+                });
+                saveTask.Start();
+
                 if (true)
                 {
                     Parallel.For(0, NumGames, (i) =>
@@ -177,26 +201,41 @@ namespace Solitaire.ViewModels
                         newDeck.ShuffleDeck();
                         Tableau newTableau = new Tableau(newDeck);
 
-                        Player.SolveGame(newTableau);
+                        GameSummary game = Player.SolveGame(newTableau);
+
+                        // write a line of text to the file
+                        gamesToSave.Push(game.SummaryCSV());
+
                     });
                 }
                 else
                 {
                     for (int i = 0; i < NumGames; i++)
                     {
-                        MainDeck.ShuffleDeck();
-                        Tableau newTableau = new Tableau(MainDeck);
+                        Deck newDeck = new Deck();
+                        newDeck.ShuffleDeck();
+                        Tableau newTableau = new Tableau(newDeck);
 
-                        Player.SolveGame(newTableau);
+                        GameSummary game = Player.SolveGame(newTableau);
+
+                        // write a line of text to the file
+                        gamesToSave.Push(game.SummaryCSV());
 
                     }
                 }
+
+                // close the stream
+                running = false;
+                saveTask.Wait();
+                tw.Close();
+
             });
 
             solveThread.ApartmentState = ApartmentState.STA;
             solveThread.Start();
 
         }
+
 
         #endregion Methods
 
