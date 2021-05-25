@@ -16,7 +16,7 @@ namespace Solitaire.Game
 
         public int GameID { get; }
 
-        public Deck OriginalDeck { get; }
+        public string OriginalDeck { get; }
 
         public BoardStatus Status { get => this.status;
             set
@@ -54,7 +54,7 @@ namespace Solitaire.Game
         public GameSummary(int gameID, Deck deck)
         {
             GameID = gameID;
-            OriginalDeck = deck.Copy();
+            OriginalDeck = deck.ToString();
         }
 
         public void FinishGame(Tableau tableau, int cycleCount)
@@ -67,7 +67,12 @@ namespace Solitaire.Game
 
         public string SummaryCSV()
         {
-            return string.Format("{0},{1},{2},{3},{4}", Status, MoveCount, CycleCount, Difficulty, OriginalDeck.ToString());
+            return string.Format("{0},{1},{2},{3},{4}", Status, MoveCount, CycleCount, Difficulty, OriginalDeck);
+        }
+
+        public string SummaryTSV()
+        {
+            return string.Format("{0}    {1}    {2}    {3}    {4}", Status, MoveCount, CycleCount, Difficulty, OriginalDeck);
         }
 
     }

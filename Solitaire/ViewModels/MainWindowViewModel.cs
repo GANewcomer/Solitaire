@@ -74,6 +74,18 @@ namespace Solitaire.ViewModels
         }
 
 
+
+        private bool massGamesRunning = false;
+        public bool MassGamesRunning
+        { 
+            get => this.massGamesRunning;
+            set
+            {
+                SetProperty(ref this.massGamesRunning, value);
+            }
+        }
+
+
         #endregion Properties
 
         #region Commands
@@ -89,7 +101,7 @@ namespace Solitaire.ViewModels
 
         public MainWindowViewModel()
         {
-            string winningDeck = "{S1,D5,D12,S11,D1,C5,H1,H9,C8,C11,D9,C1,C2,D3,C6,D11,H5,S6,H8,H7,S13,D6,C9,H11,S10,S5,C13,S9,H12,S3,H4,S12,H13,H3,S2,H2,D10,C4,D8,S4,S7,C10,D13,H10,D2,D4,H6,D7,S8,C12,C3,C7}";
+            string winningDeck = "{S1;D5;D12;S11;D1;C5;H1;H9;C8;C11;D9;C1;C2;D3;C6;D11;H5;S6;H8;H7;S13;D6;C9;H11;S10;S5;C13;S9;H12;S3;H4;S12;H13;H3;S2;H2;D10;C4;D8;S4;S7;C10;D13;H10;D2;D4;H6;D7;S8;C12;C3;C7}";
 
             //Main objects
             //MainDeck = new Deck();
@@ -161,7 +173,7 @@ namespace Solitaire.ViewModels
                 });
             });
 
-            solveThread.ApartmentState = ApartmentState.STA;
+            //solveThread.ApartmentState = ApartmentState.STA;
             solveThread.Start();
 
         }
@@ -170,28 +182,30 @@ namespace Solitaire.ViewModels
         {
             Thread solveThread = new Thread(() =>
             {
-                TextWriter tw = new StreamWriter("gamesLog.txt");
-                Stack<string> gamesToSave = new Stack<string>();
+                MassGamesRunning = true;
 
-                bool running = true;
-                Task saveTask = new Task(() =>
-                {
-                    while (running || gamesToSave.Count > 0)
-                    {
-                        Thread.Sleep(50);
+                //TextWriter tw = new StreamWriter("gamesLog.txt");
+                //Stack<string> gamesToSave = new Stack<string>();
 
-                        lock (gamesToSave)
-                        {
-                            if (gamesToSave.Count > 0)
-                            {
-                                string gameSummary = gamesToSave.Pop();
-                                tw.WriteLine(gameSummary);
-                            }
-                        }
+                //bool running = true;
+                //Task saveTask = new Task(() =>
+                //{
+                //    while (running || gamesToSave.Count > 0)
+                //    {
+                //        Thread.Sleep(50);
 
-                    }
-                });
-                saveTask.Start();
+                //        lock (gamesToSave)
+                //        {
+                //            if (gamesToSave.Count > 0)
+                //            {
+                //                string gameSummary = gamesToSave.Pop();
+                //                tw.WriteLine(gameSummary);
+                //            }
+                //        }
+
+                //    }
+                //});
+                //saveTask.Start();
 
                 if (true)
                 {
@@ -204,7 +218,7 @@ namespace Solitaire.ViewModels
                         GameSummary game = Player.SolveGame(newTableau);
 
                         // write a line of text to the file
-                        gamesToSave.Push(game.SummaryCSV());
+                        //gamesToSave.Push(game.SummaryCSV());
 
                     });
                 }
@@ -218,20 +232,23 @@ namespace Solitaire.ViewModels
 
                         GameSummary game = Player.SolveGame(newTableau);
 
+                        Console.WriteLine("Game finished " + Player.Games.Count);
                         // write a line of text to the file
-                        gamesToSave.Push(game.SummaryCSV());
+                        //gamesToSave.Push(game.SummaryCSV());
 
                     }
                 }
 
-                // close the stream
-                running = false;
-                saveTask.Wait();
-                tw.Close();
+                //// close the stream
+                //running = false;
+                //saveTask.Wait();
+                //tw.Close();
+
+                MassGamesRunning = false;
 
             });
 
-            solveThread.ApartmentState = ApartmentState.STA;
+            //solveThread.ApartmentState = ApartmentState.STA;
             solveThread.Start();
 
         }

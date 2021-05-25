@@ -45,7 +45,7 @@ namespace Solitaire.Cards
         /// <param name="deckString">The summary string of a deck of cards</param>
         public Deck(string deckString)
         {
-            string[] deckSplit = deckString.Split(',');
+            string[] deckSplit = deckString.Split(';');
             if (deckSplit.Length != Card.MaxRank * Card.NumSuits)
                 throw new ArgumentException("Cannot create deck from this string => " + deckString);
 
@@ -115,7 +115,7 @@ namespace Solitaire.Cards
             string deck = "{";
             for (int i = 0; i < Cards.Length; i++)
             {
-                deck += Cards[i].ShortName + ",";
+                deck += Cards[i].ShortName + ";";
             }
 
             deck = deck.Substring(0, deck.Length - 1) + "}";

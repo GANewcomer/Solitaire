@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -14,6 +15,7 @@ namespace Solitaire.Game
     {
 
         private ObservableCollection<Move> moves;
+        private double winPercentage = 0;
 
         public ObservableCollection<Move> Moves
         {
@@ -24,6 +26,19 @@ namespace Solitaire.Game
             }
         }
 
+        public double WinPercentage
+        {
+            get => this.winPercentage;
+            set
+            {
+                SetProperty(ref this.winPercentage, value);
+            }
+        }
+
+        public int gameStorageLimit = 1000;
+        private int gameIDCounter = -1;
+        private int gameWonCount = 0;
+
         public ObservableCollection<GameSummary> Games { get; set; } = new ObservableCollection<GameSummary>();
 
         private object gamesLock = new object();
@@ -31,8 +46,22 @@ namespace Solitaire.Game
         public Player()
         {
             BindingOperations.EnableCollectionSynchronization(Games, gamesLock);
+            //Games.CollectionChanged += new NotifyCollectionChangedEventHandler(Games_CollectionChanged);
         }
 
+        private void Games_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                lock (this.gamesLock)
+                {
+                    while (Games.Count > gameStorageLimit)
+                    {
+                        Games.RemoveAt(0);
+                    }
+                }
+            }
+        }
 
         public GameSummary SolveGame(Tableau tableau)
         {
@@ -42,7 +71,8 @@ namespace Solitaire.Game
             GameSummary newGame;
             lock (this.gamesLock)
             {
-                gameID = Games.Count;
+                gameIDCounter++;
+                gameID = gameIDCounter;
                 newGame = new GameSummary(gameID, tableau.InitialDeck);
                 Games.Add(newGame);
 
@@ -54,6 +84,15 @@ namespace Solitaire.Game
             tableau.Status = status;
             newGame.FinishGame(tableau, count);
 
+            if (status == BoardStatus.GameWon)
+                gameWonCount++;
+
+            //Updating win ratio
+            lock (this.gamesLock)
+            {
+                WinPercentage = gameWonCount / (double)Games.Count * 100;
+            }
+
             return newGame;
         }
 
@@ -63,7 +102,7 @@ namespace Solitaire.Game
             {
                 lock (this.gamesLock)
                 {
-                    Games.Add(new GameSummary(Games.Count, tableau.InitialDeck));
+                    Games.Add(new GameSummary(gameIDCounter++, tableau.InitialDeck));
                     gameID = Games.Count;
                 }
             }
@@ -76,7 +115,7 @@ namespace Solitaire.Game
             {
                 cycleCount++;
 
-                //Thread.Sleep(100);
+                //Thread.Sleep(50);
 
                 // performing move
                 BoardStatus status = PerformMove(tableau, move);
@@ -88,14 +127,15 @@ namespace Solitaire.Game
                 string state = tableau.GetSummary();
                 lock (this.gamesLock)
                 {
-                    if (Games[gameID].GameStates.Contains(state))
+                    var game = Games.Where(game => game.GameID == gameID).First();
+                    if (game.GameStates.Contains(state))
                     {
                         // undoing move for the next move to pick up with
                         tableau.UndoLastMove();
                         continue;
                     }
 
-                    Games[gameID].GameStates.Add(state);
+                    game.GameStates.Add(state);
                 }
 
                 // analyzing tableau

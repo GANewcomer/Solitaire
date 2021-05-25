@@ -7,6 +7,7 @@ namespace Solitaire.Cards
 {
     public class Card : BindableBase
     {
+        #region Properties
 
         public const int MinRank = 1;
         public const int MaxRank = 13;
@@ -84,6 +85,7 @@ namespace Solitaire.Cards
         /// </summary>
         public string FullName { get; }
 
+        #endregion Properties
 
         /// <summary>
         /// Create a new Card
