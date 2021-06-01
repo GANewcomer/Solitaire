@@ -66,23 +66,19 @@ namespace Solitaire.Game
         public GameSummary SolveGame(Tableau tableau)
         {
             //Creating game
-            int count = 0;
-            int gameID;
             GameSummary newGame;
             lock (this.gamesLock)
             {
                 gameIDCounter++;
-                gameID = gameIDCounter;
-                newGame = new GameSummary(gameID, tableau.InitialDeck);
+                newGame = new GameSummary(gameIDCounter, tableau.InitialDeck);
                 Games.Add(newGame);
-
             }
 
 
             //Solving game
-            BoardStatus status = EvaluateGameState(tableau, ref count, gameID);
+            BoardStatus status = EvaluateGameState(tableau, newGame);
             tableau.Status = status;
-            newGame.FinishGame(tableau, count);
+            newGame.FinishGame(tableau);
 
             if (status == BoardStatus.GameWon)
                 gameWonCount++;
@@ -96,14 +92,15 @@ namespace Solitaire.Game
             return newGame;
         }
 
-        public BoardStatus EvaluateGameState(Tableau tableau, ref int cycleCount, int gameID = -1)
+        public BoardStatus EvaluateGameState(Tableau tableau, GameSummary game)
         {
-            if (gameID == -1)
+            if (game == null)
             {
                 lock (this.gamesLock)
                 {
-                    Games.Add(new GameSummary(gameIDCounter++, tableau.InitialDeck));
-                    gameID = Games.Count;
+                    gameIDCounter++;
+                    game = new GameSummary(gameIDCounter, tableau.InitialDeck);
+                    Games.Add(game);
                 }
             }
 
@@ -113,9 +110,12 @@ namespace Solitaire.Game
             //Looping through moves
             foreach (Move move in moves)
             {
-                cycleCount++;
+                game.CycleCount++;
 
                 //Thread.Sleep(50);
+
+                if (game.CycleCount == 4000)
+                    Console.Write(" OVER 4000!");
 
                 // performing move
                 BoardStatus status = PerformMove(tableau, move);
@@ -125,21 +125,17 @@ namespace Solitaire.Game
 
                 // checking tableau state
                 string state = tableau.GetSummary();
-                lock (this.gamesLock)
+                if (game.GameStates.Contains(state))
                 {
-                    var game = Games.Where(game => game.GameID == gameID).First();
-                    if (game.GameStates.Contains(state))
-                    {
-                        // undoing move for the next move to pick up with
-                        tableau.UndoLastMove();
-                        continue;
-                    }
-
-                    game.GameStates.Add(state);
+                    // undoing move for the next move to pick up with
+                    tableau.UndoLastMove();
+                    continue;
                 }
 
+                game.GameStates.Add(state);
+
                 // analyzing tableau
-                status = EvaluateGameState(tableau, ref cycleCount, gameID);
+                status = EvaluateGameState(tableau, game);
 
                 if (status != BoardStatus.InProgress)
                     return status;

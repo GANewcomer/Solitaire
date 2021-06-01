@@ -57,12 +57,10 @@ namespace Solitaire.Game
             OriginalDeck = deck.ToString();
         }
 
-        public void FinishGame(Tableau tableau, int cycleCount)
+        public void FinishGame(Tableau tableau)
         {
             Status = tableau.Status;
             MoveCount = tableau.Moves.Count;
-            CycleCount = cycleCount;
-
         }
 
         public string SummaryCSV()

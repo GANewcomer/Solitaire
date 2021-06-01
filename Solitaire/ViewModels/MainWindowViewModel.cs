@@ -102,10 +102,12 @@ namespace Solitaire.ViewModels
         public MainWindowViewModel()
         {
             string winningDeck = "{S1;D5;D12;S11;D1;C5;H1;H9;C8;C11;D9;C1;C2;D3;C6;D11;H5;S6;H8;H7;S13;D6;C9;H11;S10;S5;C13;S9;H12;S3;H4;S12;H13;H3;S2;H2;D10;C4;D8;S4;S7;C10;D13;H10;D2;D4;H6;D7;S8;C12;C3;C7}";
+            string badGame = "{C6;H9;C10;D10;H8;S9;S11;S6;D11;H10;C1;C11;D12;H3;C5;D1;S10;D13;D8;H4;S1;C3;C2;D3;H5;C12;S13;S7;C7;H2;C4;H7;H12;C13;C9;D2;H6;H1;D7;D9;S12;C8;D5;S2;H11;D6;S3;S8;H13;D4;S5;S4}";
 
             //Main objects
             //MainDeck = new Deck();
-            MainDeck = new Deck(winningDeck);
+            //MainDeck = new Deck(winningDeck);
+            MainDeck = new Deck(badGame);
             Player = new Player();
 
             Tableau = new Tableau(MainDeck);
